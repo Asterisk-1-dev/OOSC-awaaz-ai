@@ -15,6 +15,11 @@ load_dotenv()
 # Initialize API
 app = FastAPI(title="Rights Navigator API", version="1.0.0")
 
+# Favicon
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    return FileResponse("frontend/static/awaaz.png")
+
 # Direction
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "../frontend"))
