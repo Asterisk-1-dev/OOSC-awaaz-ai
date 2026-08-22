@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Awaaz AI - Legal Rights Navigator</title>
+  <!-- jsPDF Library for Client-Side PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    /* --- CSS Variables & Teammate's Slate/Teal Dark Theme --- */
+    :root[data-theme="dark"] {
+      --bg-deep: #0f172a;
+      --sidebar-bg: #1e293b;
+      --panel-bg: rgba(30, 41, 59, 0.85);
+      --card-bg: rgba(51, 65, 85, 0.5);
+      --primary-color: #38bdf8;
+      --primary-glow: rgba(56, 189, 248, 0.2);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-glass: rgba(255, 255, 255, 0.12);
+      --hover-bg: rgba(255, 255, 255, 0.06);
+      --active-bg: rgba(56, 189, 248, 0.12);
+      --success-color: #10b981;
+      --error-color: #ef4444;
+    }
+
+    /* --- Teammate's Light Theme Support --- */
+    :root[data-theme="light"] {
+      --bg-deep: #f8fafc;
+      --sidebar-bg: #f1f5f9;
+      --panel-bg: rgba(255, 255, 255, 0.95);
+      --card-bg: rgba(255, 255, 255, 0.8);
+      --primary-color: #175d73;
+      --primary-glow: rgba(23, 93, 115, 0.2);
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border-glass: rgba(0, 0, 0, 0.15);
+      --hover-bg: rgba(0, 0, 0, 0.05);
+      --active-bg: rgba(23, 93, 115, 0.1);
+      --success-color: #059669;
+      --error-color: #dc2626;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background-color: var(--bg-deep); margin: 0; padding: 0; width: 100%; min-height: 100vh; transition: background-color 0.3s ease; }
+    
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+      position: relative; 
+      padding-bottom: 60px;
+    }
+
+    /* --- Theme Toggle Button --- */
+    .theme-toggle-btn {
+      position: fixed;
+      top: 25px;
+      right: 25px;
+      background: var(--sidebar-bg);
+      border: 1px solid var(--border-glass);
+      color: var(--text-main);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .theme-toggle-btn:hover { background: var(--hover-bg); }
+
+    /* --- Ambient Glowing Orbs Background (Updated to Teal/Sky) --- */
+    body::before, body::after {
+      content: ""; position: fixed; z-index: -1; border-radius: 50%; filter: blur(90px); opacity: 0.35;
+    }
+    body::before { top: -100px; left: 10%; width: 400px; height: 400px; background: #0ea5e9; }
+    body::after { bottom: -100px; right: 10%; width: 450px; height: 450px; background: #175d73; }
+
+    /* --- TEAMMATE ANIMATIONS --- */
+    @keyframes shrinkAndMoveUp {
+      0% { transform: translateY(28vh) scale(1.2); }
+      100% { transform: translateY(2vh) scale(0.9); }
+    }
+    @keyframes fadeIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-20px); } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 50% { transform: translateX(8px); } 75% { transform: translateX(-8px); } }
+    @keyframes pulseRecord { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+    .initial-load { opacity: 0; animation: fadeIn 1s ease forwards !important; animation-delay: 2.6s !important; }
+    .fade-in { animation: fadeIn 0.4s ease forwards !important; opacity: 0; }
+    .fade-out { animation: fadeOut 0.4s ease forwards !important; }
+    .shake-error { animation: shake 0.4s ease-in-out !important; }
+
+    /* --- Header & Logo Styling (Animated) --- */
+    .header-container {
+      display: flex; align-items: center; gap: 14px; text-align: center;
+      animation: shrinkAndMoveUp 1.5s cubic-bezier(0.8, 0, 0.2, 1) forwards; animation-delay: 1.2s; 
+      transform: translateY(28vh) scale(1.2); 
+      z-index: 10;
+    }
+    .brand-name { font-size: 2.6rem; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px; text-shadow: 0px 0px 20px var(--primary-glow); }
+    .logo-img { 
+      width: 75px; /* Increased from 55px to make it larger */
+      height: auto; 
+      object-fit: contain; 
+      filter: drop-shadow(0 0 10px var(--primary-glow)); 
+      background: transparent; /* Ensures no forced background color */
+    }
+
+    /* --- Slide-out Sidebar --- */
+    .history-toggle-btn {
+      position: fixed; top: 25px; left: 25px; background: var(--sidebar-bg); border: 1px solid var(--border-glass); color: var(--text-main);
+      width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.2s ease;
+    }
+    .history-toggle-btn:hover { background: var(--hover-bg); }
+    .history-toggle-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .history-sidebar {
+      position: fixed; top: 0; left: -320px; width: 290px; height: 100%; background: var(--sidebar-bg);
+      border-right: 1px solid var(--border-glass); padding: 20px 14px; display: flex; flex-direction: column; gap: 15px;
+      z-index: 999; box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6); transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .history-sidebar.open { left: 0; }
+
+    .new-chat-btn {
+      display: flex; align-items: center; gap: 10px; background: var(--hover-bg); border: 1px solid var(--border-glass); color: var(--text-main);
+      padding: 10px 14px; border-radius: 24px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-top: 50px;
+    }
+    .new-chat-btn:hover { background: var(--active-bg); }
+
+    .history-sidebar h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-top: 10px; padding-left: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .history-sidebar h4 span { display: flex; align-items: center; gap: 6px; }
+
+    .history-list-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
+    .history-list-container::-webkit-scrollbar { width: 4px; }
+    .history-list-container::-webkit-scrollbar-thumb { background: var(--border-glass); border-radius: 4px; }
+
+    .history-item { padding: 10px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s; position: relative; display: flex; align-items: center; justify-content: space-between; color: var(--text-main); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-item:hover { background: var(--hover-bg); }
+    .history-item.active { background: var(--active-bg); color: var(--primary-color); font-weight: 600; }
+    .history-item-text { overflow: hidden; text-overflow: ellipsis; flex: 1; padding-right: 15px; }
+
+    .delete-item-btn { background: transparent; border: none; color: var(--text-muted); font-size: 1rem; cursor: pointer; opacity: 0; transition: opacity 0.2s; }
+    .history-item:hover .delete-item-btn { opacity: 1; }
+    .delete-item-btn:hover { color: var(--error-color); }
+    .clear-all-sidebar { background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; text-decoration: underline; padding-right: 10px; }
+    .clear-all-sidebar:hover { color: var(--error-color); }
+
+    /* --- Glass Panels --- */
+    .glass-panel {
+      background: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 2.5rem; 
+      border-radius: 24px; border: 1px solid var(--border-glass); box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2); 
+      width: 92%; max-width: 900px; display: flex; flex-direction: column; 
+      margin-top: 100px; /* Space for the animated header */
+    }
+
+    #step1 { flex-direction: row; gap: 1.5rem; align-items: flex-end; justify-content: center; flex-wrap: wrap; }
+    #step2 { display: none; align-items: stretch; gap: 1.5rem; }
+    #step2 h2 { color: var(--text-main); font-size: 1.8rem; text-align: center; font-weight: 700; }
+    #step2 p.subtitle { font-size: 0.95rem; color: var(--text-muted); text-align: center; margin-top: -6px; }
+
+    /* --- Form Elements & Autocomplete --- */
+    .input-group { display: flex; flex-direction: column; gap: 0.5rem; position: relative; flex: 1; min-width: 220px; }
+    .input-group label { font-weight: 600; font-size: 0.9rem; color: var(--primary-color); }
+    .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+    .input-group input { padding: 0.85rem 2.5rem 0.85rem 1rem; font-size: 1rem; border: 1.5px solid var(--border-glass); border-radius: 12px; width: 100%; outline: none; color: var(--text-main); background-color: var(--card-bg); transition: all 0.2s ease; cursor: pointer; }
+    .input-group input:hover { border-color: var(--primary-color); }
+    .input-group input:focus, .chatbox-container textarea:focus { border-color: var(--primary-color); box-shadow: 0 0 0 4px var(--primary-glow); cursor: text; background-color: var(--bg-deep); }
+    .input-group input:disabled { background-color: var(--hover-bg); cursor: not-allowed; border-color: var(--border-glass); color: var(--text-muted); }
+    
+    .dropdown-icon { position: absolute; right: 12px; color: var(--text-muted); display: flex; align-items: center; justify-content: center; pointer-events: none; }
+    .clear-btn { position: absolute; right: 12px; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; display: none; user-select: none; background: transparent; padding-left: 5px; }
+    .clear-btn:hover { color: var(--error-color); }
+
+    .suggestions-list { position: absolute; top: 100%; left: 0; width: 100%; max-height: 200px; overflow-y: auto; background-color: var(--sidebar-bg); border: 1.5px solid var(--primary-color); border-radius: 12px; margin-top: 6px; list-style: none; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5); z-index: 1000; display: none; }
+    .suggestions-list li { padding: 0.75rem 1rem; font-size: 0.95rem; cursor: pointer; border-bottom: 1px solid var(--border-glass); color: var(--text-main); }
+    .suggestions-list li:hover, .suggestions-list li.active { background-color: var(--active-bg); color: var(--primary-color); }
+    .suggestions-list li strong { font-weight: 800; color: var(--primary-color); }
+    .suggestions-list::-webkit-scrollbar { width: 6px; }
+    .suggestions-list::-webkit-scrollbar-thumb { background-color: var(--border-glass); border-radius: 4px; }
+
+    /* --- Chatbox & Voice Styling --- */
+    .chatbox-container { width: 100%; display: flex; flex-direction: column; gap: 0.5rem; }
+    .chatbox-container label { font-weight: 600; font-size: 0.95rem; color: var(--primary-color); }
+    .textarea-wrapper { position: relative; width: 100%; }
+    .chatbox-container textarea { width: 100%; min-height: 110px; padding: 1rem 3.5rem 1rem 1rem; font-size: 1rem; line-height: 1.5; color: var(--text-main); border: 1.5px solid var(--border-glass); border-radius: 12px; resize: vertical; font-family: inherit; outline: none; transition: all 0.2s ease; background: var(--card-bg); }
+    
+    .mic-btn { position: absolute; right: 12px; bottom: 12px; background: var(--active-bg); border: 1px solid var(--primary-glow); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary-color); transition: all 0.2s ease; }
+    .mic-btn:hover { background: var(--hover-bg); }
+    .mic-btn.recording { background: var(--error-color); border-color: var(--error-color); color: white; animation: pulseRecord 1.5s infinite; }
+
+    .chatbox-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; flex-wrap: wrap; gap: 10px; }
+    .char-counter { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+    .char-counter.limit-reached { color: var(--error-color); }
+
+    /* --- Buttons --- */
+    .btn { padding: 0.85rem 1.5rem; font-size: 1rem; font-weight: 600; color: #fff; background: var(--primary-color); border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; height: 46px; box-shadow: 0 4px 15px var(--primary-glow); }
+    .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { background: var(--hover-bg); color: var(--text-muted); cursor: wait; box-shadow: none; }
+    
+    .btn-secondary { background-color: transparent; color: var(--text-muted); border: none; font-size: 0.9rem; text-decoration: underline; padding: 0.5rem; cursor: pointer; align-self: center; margin-top: 10px; transition: color 0.2s; }
+    .btn-secondary:hover { color: var(--primary-color); }
+
+    /* --- Quick Tool Features (Consumer, Helplines, CCTNS) --- */
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .feature-card { background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 10px; }
+    .feature-card:hover { border-color: var(--primary-color); transform: translateY(-2px); box-shadow: 0 10px 25px var(--primary-glow); }
+    .feature-icon-wrapper { width: 42px; height: 42px; background: var(--active-bg); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); }
+    .feature-card h3 { font-size: 1.05rem; color: var(--primary-color); margin: 0;}
+    .feature-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0; }
+
+    .feature-detail-view { display: none; flex-direction: column; gap: 1rem; background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 18px; padding: 1.5rem; margin-bottom: 20px; animation: fadeIn 0.3s ease; }
+    .feature-detail-view.active { display: flex; }
+    
+    .checklist-item { display: flex; align-items: flex-start; gap: 10px; margin: 8px 0; font-size: 0.9rem; cursor: pointer; color: var(--text-main); }
+    .checklist-item input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary-color); cursor: pointer; }
+    .checklist-item input[type="checkbox"]:checked + span { text-decoration: line-through; color: var(--text-muted); }
+
+    .dlsa-box { background: var(--active-bg); border: 1px dashed var(--primary-color); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; color: var(--primary-color); }
+    
+    .helpline-search-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border-glass); border-radius: 8px; font-size: 0.95rem; outline: none; background: var(--bg-deep); color: var(--text-main); margin-bottom: 12px; }
+    .helpline-search-input:focus { border-color: var(--primary-color); }
+    .helpline-list { display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; }
+    .helpline-card { background: var(--bg-deep); border: 1px solid var(--border-glass); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; }
+    .helpline-info h4 { font-size: 0.95rem; color: var(--primary-color); margin: 0; }
+    .helpline-info p { font-size: 0.8rem; color: var(--text-muted); margin: 2px 0 0 0; }
+    .helpline-number { background: var(--active-bg); color: var(--primary-color); padding: 5px 12px; border-radius: 6px; font-weight: 700; font-size: 0.95rem; text-decoration: none; display:flex; align-items:center; gap: 6px;}
+    .helpline-number:hover { background: var(--primary-color); color: var(--bg-deep); }
+
+    .external-link-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--active-bg); color: var(--primary-color); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; text-decoration: none; margin-top: 8px; margin-right: 8px; border: 1px solid var(--border-glass); transition: all 0.2s; }
+    .external-link-btn:hover { background: var(--primary-color); color: var(--bg-deep); }
+
+    /* --- Legal Disclaimer / Caution Notice --- */
+    .legal-disclaimer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      background: var(--hover-bg);
+      border-left: 3px solid var(--primary-color);
+      padding: 10px 14px;
+      border-radius: 6px;
+      line-height: 1.4;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    /* --- Tabbed Interface Dashboard (AI output) --- */
+    #resultContainer { width: 100%; margin-top: 15px; animation: fadeIn 0.4s ease; }
+    .tabs-header { display: flex; gap: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 12px; margin-bottom: 20px; overflow-x: auto; scrollbar-width: none; }
+    .tabs-header::-webkit-scrollbar { display: none; }
+    .tab-btn { background: transparent; color: var(--text-muted); border: 1px solid transparent; padding: 10px 16px; border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease; white-space: nowrap; font-size: 0.9rem; }
+    .tab-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .tab-btn:hover { background: var(--hover-bg); color: var(--text-main); }
+    .tab-btn.active { background: var(--active-bg); color: var(--primary-color); border-color: var(--primary-glow); }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; animation: fadeIn 0.4s ease forwards; }
+
+    .bento-card { background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 18px; padding: 22px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 12px; backdrop-filter: blur(10px); transition: border-color 0.2s; }
+    .bento-card:hover { border-color: var(--primary-glow); }
+    .bento-card.full-width { grid-column: span 2; }
+    .bento-card h3 { font-size: 1.05rem; color: var(--primary-color); display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-glass); padding-bottom: 8px; margin-bottom: 2px; font-weight: 600; }
+    .bento-card h3 svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+    .bento-card p, .bento-card li { font-size: 0.9rem; line-height: 1.6; color: var(--text-main); }
+    .bento-card ul, .bento-card ol { margin-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+
+    .tts-btn { background: var(--active-bg); border: 1px solid var(--primary-glow); color: var(--primary-color); padding: 8px 14px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s ease; white-space: nowrap; }
+    .tts-btn:hover { background: var(--primary-color); color: var(--bg-deep); }
+    .tts-btn.speaking { background: var(--error-color); border-color: var(--error-color); color: white; }
+    .tts-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .portal-link-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--active-bg); border: 1px solid var(--primary-glow); color: var(--primary-color); padding: 10px 16px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; margin-top: 5px; }
+    .portal-link-btn:hover { background: var(--primary-color); color: var(--bg-deep); }
+    .portal-link-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
+
+    .draft-header-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .copy-btn { background: var(--active-bg); border: 1px solid var(--primary-glow); color: var(--primary-color); padding: 6px 14px; font-size: 0.8rem; font-weight: 600; border-radius: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
+    .copy-btn:hover { background: var(--primary-color); color: var(--bg-deep); }
+    .copy-btn.copied { background: var(--success-color); border-color: var(--success-color); color: white; }
+    .copy-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .contact-row { display: flex; align-items: center; gap: 6px; }
+    .contact-row svg { width: 14px; height: 14px; color: var(--primary-color); stroke: currentColor; fill: none; }
+
+    /* --- Floating Assistant UI --- */
+    .assistant-fab { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; border-radius: 50%; background: var(--primary-color); color: #fff; border: none; cursor: pointer; box-shadow: 0 4px 20px var(--primary-glow); display: flex; align-items: center; justify-content: center; z-index: 9999; transition: transform 0.2s; }
+    .assistant-fab:hover { transform: scale(1.1); }
+    .assistant-fab svg { width: 26px; height: 26px; stroke: currentColor; }
+
+    .assistant-window { position: fixed; bottom: 90px; right: 20px; width: 340px; max-width: calc(100vw - 40px); height: 460px; max-height: 70vh; background: var(--sidebar-bg); border: 1px solid var(--border-glass); border-radius: 18px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); display: flex; flex-direction: column; z-index: 9998; overflow: hidden; transform: translateY(20px); opacity: 0; pointer-events: none; transition: all 0.3s ease; }
+    .assistant-window.active { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .assistant-header { background: var(--primary-color); color: #ffffff; padding: 12px 16px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; font-size: 0.95rem; }
+    .assistant-header button { background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; }
+    .assistant-chat { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--sidebar-bg); }
+    .chat-msg { padding: 9px 12px; border-radius: 10px; max-width: 85%; font-size: 0.85rem; line-height: 1.4; }
+    .bot-msg { background: var(--card-bg); color: var(--text-main); border: 1px solid var(--border-glass); align-self: flex-start; border-bottom-left-radius: 2px; }
+    .user-msg { background: var(--primary-color); color: #fff; font-weight: 600; align-self: flex-end; border-bottom-right-radius: 2px; }
+
+    .lang-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 5px; }
+    .lang-chip, .action-chip { background: var(--card-bg); border: 1px solid var(--primary-glow); color: var(--primary-color); padding: 5px 10px; border-radius: 14px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+    .lang-chip:hover, .action-chip:hover { background: var(--primary-color); color: #fff; }
+    
+    .chat-input-area { padding: 8px; background: var(--bg-deep); border-top: 1px solid var(--border-glass); display: flex; gap: 8px; }
+    .chat-input-area input { flex: 1; padding: 6px 10px; border: 1px solid var(--border-glass); background: var(--card-bg); color: var(--text-main); border-radius: 18px; outline: none; font-size: 0.85rem; }
+    .chat-input-area button { background: var(--primary-color); color: #fff; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+    /* --- Responsive Media Queries --- */
+    @media (max-width: 768px) {
+      .brand-name { font-size: 2.2rem; }
+      .glass-panel { padding: 1.5rem; width: 95%; }
+      #step1 { flex-direction: column; align-items: stretch; gap: 1rem; }
+      .input-group { width: 100%; min-width: 100%; }
+      .btn { width: 100%; }
+      .tab-pane.active { grid-template-columns: 1fr; }
+      .bento-card.full-width { grid-column: span 1; }
+      .history-toggle-btn { top: 15px; left: 15px; }
+      .theme-toggle-btn { top: 15px; right: 15px; padding: 6px 10px;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Theme Toggle Button -->
+  <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()">
+    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="19.78" x2="19.78" y2="21.2"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="4.22" x2="19.78" y2="5.64"/></svg>
+    Light Mode
+  </button>
+
+  <!-- Sidebar Toggle Button -->
+  <button class="history-toggle-btn" id="historyToggleBtn" title="Expand Sidebar">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+  </button>
+
+  <!-- Slide-out Sidebar -->
+  <div class="history-sidebar" id="historySidebar">
+    <button class="new-chat-btn" onclick="startNewChat()">
+      <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      New Consultation
+    </button>
+    
+    <h4>
+      <span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Recent
+      </span> 
+      <button class="clear-all-sidebar" onclick="clearHistory()">Clear All</button>
+    </h4>
+    
+    <div class="history-list-container" id="historyList">
+      <div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted);">No recent chats.</div>
+    </div>
+  </div>
+
+  <!-- Header & Logo -->
+  <div class="header-container">
+    <img src="/static/awaaz.png" alt="Awaaz AI Logo" class="logo-img">
+    <h1 class="brand-name">Awaaz AI</h1>
+  </div>
+
+  <!-- STEP 1: Location Form (with initial load animation) -->
+  <form class="glass-panel initial-load" id="step1">
+    <div class="input-group">
+      <label for="stateInput">State</label>
+      <div class="input-wrapper">
+        <input type="text" id="stateInput" placeholder="Select your state..." autocomplete="off">
+        <span class="clear-btn" id="clearState" title="Clear selection">&times;</span>
+        <span class="dropdown-icon" id="dropState">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
+      </div>
+      <ul id="stateList" class="suggestions-list"></ul>
+    </div>
+
+    <div class="input-group">
+      <label for="districtInput">District</label>
+      <div class="input-wrapper">
+        <input type="text" id="districtInput" placeholder="Select state first..." autocomplete="off" disabled>
+        <span class="clear-btn" id="clearDistrict" title="Clear selection">&times;</span>
+        <span class="dropdown-icon" id="dropDistrict">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </span>
+      </div>
+      <ul id="districtList" class="suggestions-list"></ul>
+    </div>
+
+    <button type="submit" class="btn">Continue</button>
+  </form>
+
+  <!-- STEP 2: Main AI Dashboard Interface -->
+  <div class="glass-panel" id="step2">
+    <h2>Legal Rights Navigator</h2>
+    <p class="subtitle">Providing civic assistance for residents of <strong id="userLocationDisplay" style="color:var(--primary-color);"></strong>.</p>
+    
+    <!-- Quick Tool Feature Cards -->
+    <div class="features-grid" id="featuresGridContainer">
+      <div class="feature-card" onclick="openFeature('consumer')">
+        <div class="feature-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h3>Consumer Redressal</h3>
+        <p>Step-by-step resolution guides against faulty goods and services.</p>
+      </div>
+      <div class="feature-card" onclick="openFeature('helplines')">
+        <div class="feature-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <h3>Emergency Helplines</h3>
+        <p>Searchable directory of national & state emergency numbers.</p>
+      </div>
+      <div class="feature-card" onclick="openFeature('fir')">
+        <div class="feature-icon-wrapper">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Police & State CCTNS</h3>
+        <p>Zero FIR guidelines, national cyber crime portals, and state police portals.</p>
+      </div>
+    </div>
+
+    <!-- Feature Detail View -->
+    <div class="feature-detail-view" id="featureDetailView">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 id="detailTitle" style="color: var(--primary-color); font-size: 1.2rem; display: flex; align-items: center; gap: 8px;"></h3>
+        <button type="button" class="btn-secondary" onclick="closeFeature()" style="margin: 0; font-weight: 600;">&larr; Close Guide</button>
+      </div>
+      <div id="detailContent" style="font-size: 0.9rem; color: var(--text-main); line-height: 1.5; margin-top: 10px;"></div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid var(--border-glass); margin: 5px 0 15px 0;">
+
+    <!-- LEGAL DISCLAIMER -->
+    <div class="legal-disclaimer">
+      <strong>⚠️ Legal Disclaimer & Caution:</strong> Awaaz AI is an informational guide and civic rights navigator designed for educational and preliminary assistance purposes only. It <strong>does not constitute formal legal advice</strong> or establish an attorney-client relationship. For critical legal matters, please consult a qualified advocate or your local District Legal Services Authority (DLSA).
+    </div>
+
+    <!-- ORIGINAL AI CHATBOX & FASTAPI INPUT -->
+    <div class="chatbox-container">
+      <label for="problemInput">Ask the AI Legal Navigator:</label>
+      <div class="textarea-wrapper">
+        <textarea id="problemInput" maxlength="500" placeholder="E.g., I have an issue regarding potholes on the main road causing accidents..."></textarea>
+        
+        <button type="button" id="micBtn" class="mic-btn" title="Click to dictate">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="chatbox-footer">
+        <span class="char-counter" id="charCount">0 / 500</span>
+        <button type="button" class="btn" id="submitIssueBtn">Submit Issue</button>
+      </div>
+    </div>
+
+    <!-- Tabbed Dashboard Container -->
+    <div id="resultContainer" style="display: none;"></div>
+
+    <button type="button" class="btn-secondary" id="backBtn">Change Location</button>
+  </div>
+
+  <!-- Multilingual Assistant UI -->
+  <div class="assistant-container">
+    <button id="assistantFab" class="assistant-fab" title="Need Help?">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+      </svg>
+    </button>
+
+    <div id="assistantWindow" class="assistant-window">
+      <div class="assistant-header">
+        Awaaz Sahayak (Guide)
+        <button id="closeAssistant">&times;</button>
+      </div>
+      <div id="assistantChat" class="assistant-chat"></div>
+      <div class="chat-input-area">
+        <input type="text" placeholder="Select an option above..." disabled>
+        <button disabled><svg viewBox="0 0 24 24" width="16" height="16" stroke="white" stroke-width="2" fill="none"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const indiaData = {
+      "Andaman and Nicobar Islands": ["Nicobar", "North and Middle Andaman", "South Andaman"],
+      "Andhra Pradesh": ["Alluri Sitharama Raju", "Anakapalli", "Ananthapuramu", "Annamayya", "Bapatla", "Chittoor", "Dr. B.R. Ambedkar Konaseema", "East Godavari", "Eluru", "Guntur", "Kakinada", "Krishna", "Kurnool", "Nandyal", "NTR", "Palnadu", "Parvathipuram Manyam", "Prakasam", "Sri Potti Sriramulu Nellore", "Sri Sathya Sai", "Srikakulam", "Tirupati", "Visakhapatnam", "Vizianagaram", "West Godavari", "Y.S.R. Kadapa"],
+      "Arunachal Pradesh": ["Anjaw", "Changlang", "East Kameng", "East Siang", "Kamle", "Kra Daadi", "Kurung Kumey", "Lepa Rada", "Lohit", "Longding", "Lower Dibang Valley", "Lower Siang", "Lower Subansiri", "Namsai", "Pakke Kessang", "Papum Pare", "Shi Yomi", "Siang", "Tawang", "Tirap", "Upper Dibang Valley", "Upper Siang", "Upper Subansiri", "West Kameng", "West Siang"],
+      "Assam": ["Baksa", "Barpeta", "Biswanath", "Bongaigaon", "Cachar", "Charaideo", "Chirang", "Darrang", "Dhemaji", "Dhubri", "Dibrugarh", "Dima Hasao", "Goalpara", "Golaghat", "Hailakandi", "Hojai", "Jorhat", "Kamrup", "Kamrup Metropolitan", "Karbi Anglong", "Karimganj", "Kokrajhar", "Lakhimpur", "Majuli", "Morigaon", "Nagaon", "Nalbari", "Sivasagar", "South Salmara-Mankachar", "Sonitpur", "Tinsukia", "Udalguri", "West Karbi Anglong"],
+      "Bihar": ["Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur", "Buxar", "Darbhanga", "East Champaran", "Gaya", "Gopalganj", "Jamui", "Jehanabad", "Kaimur", "Katihar", "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura", "Madhubani", "Munger", "Muzaffarpur", "Nalanda", "Nawada", "Patna", "Purnia", "Rohtas", "Saharsa", "Samastipur", "Saran", "Sheikhpura", "Sheohar", "Sitamarhi", "Siwan", "Supaul", "Vaishali", "West Champaran"],
+      "Chandigarh": ["Chandigarh"],
+      "Chhattisgarh": ["Balod", "Baloda Bazar", "Balrampur", "Bastar", "Bemetara", "Bijapur", "Bilaspur", "Dantewada", "Dhamtari", "Durg", "Gariaband", "Gaurela-Pendra-Marwahi", "Janjgir-Champa", "Jashpur", "Kabirdham", "Kanker", "Kondagaon", "Korba", "Koriya", "Mahasamund", "Manendragarh-Chirmiri-Bharatpur", "Mohla-Manpur-Ambagarh Chowki", "Mungeli", "Narayanpur", "Raigarh", "Raipur", "Rajnandgaon", "Sakti", "Sarangarh-Bilaigarh", "Sukma", "Surajpur", "Surguja"],
+      "Dadra and Nagar Haveli and Daman and Diu": ["Dadra and Nagar Haveli", "Daman", "Diu"],
+      "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"],
+      "Goa": ["North Goa", "South Goa"],
+      "Gujarat": ["Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch", "Bhavnagar", "Botad", "Chhota Udaipur", "Dahod", "Dang", "Devbhoomi Dwarka", "Gandhinagar", "Gir Somnath", "Jamnagar", "Junagadh", "Kheda", "Kutch", "Mahisagar", "Mehsana", "Morbi", "Narmada", "Navsari", "Panchmahal", "Patan", "Porbandar", "Rajkot", "Sabarkantha", "Surat", "Surendranagar", "Tapi", "Vadodara", "Valsad"],
+      "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurugram", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
+      "Himachal Pradesh": ["Bilaspur", "Chamba", "Hamirpur", "Kangra", "Kinnaur", "Kullu", "Lahaul and Spiti", "Mandi", "Shimla", "Sirmaur", "Solan", "Una"],
+      "Jammu and Kashmir": ["Anantnag", "Bandipora", "Baramulla", "Budgam", "Doda", "Ganderbal", "Jammu", "Kathua", "Kishtwar", "Kulgam", "Kupwara", "Poonch", "Pulwama", "Rajouri", "Ramban", "Reasi", "Samba", "Shopian", "Srinagar", "Udhampur"],
+      "Jharkhand": ["Bokaro", "Chatra", "Deoghar", "Dhanbad", "Dumka", "East Singhbhum", "Garhwa", "Giridih", "Godda", "Gumla", "Hazaribagh", "Jamtara", "Khunti", "Koderma", "Latehar", "Lohardaga", "Pakur", "Palamu", "Ramgarh", "Ranchi", "Sahibganj", "Saraikela Kharsawan", "Simdega", "West Singhbhum"],
+      "Karnataka": ["Bagalkot", "Ballari", "Belagavi", "Bengaluru Rural", "Bengaluru Urban", "Bidar", "Chamarajanagar", "Chikkaballapur", "Chikkamagaluru", "Chitradurga", "Dakshina Kannada", "Davanagere", "Dharwad", "Gadag", "Hassan", "Haveri", "Kalaburagi", "Kodagu", "Kolar", "Koppal", "Mandya", "Mysuru", "Raichur", "Ramanagara", "Shivamogga", "Tumakuru", "Udupi", "Uttara Kannada", "Vijayanagara", "Vijayapura", "Yadgir"],
+      "Kerala": ["Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam", "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram", "Thrissur", "Wayanad"],
+      "Ladakh": ["Kargil", "Leh"],
+      "Lakshadweep": ["Lakshadweep"],
+      "Madhya Pradesh": ["Agar Malwa", "Alirajpur", "Anuppur", "Ashoknagar", "Balaghat", "Barwani", "Betul", "Bhind", "Bhopal", "Burhanpur", "Chhatarpur", "Chhindwara", "Damoh", "Datia", "Dewas", "Dhar", "Dindori", "Guna", "Gwalior", "Harda", "Hoshangabad", "Indore", "Jabalpur", "Jhabua", "Katni", "Khandwa", "Khargone", "Mandla", "Mandsaur", "Morena", "Narsinghpur", "Neemuch", "Niwari", "Panna", "Raisen", "Rajgarh", "Ratlam", "Rewa", "Sagar", "Satna", "Sehore", "Seoni", "Shahdol", "Shajapur", "Sheopur", "Shivpuri", "Sidhi", "Singrauli", "Tikamgarh", "Ujjain", "Umaria", "Vidisha"],
+      "Maharashtra": ["Ahmednagar", "Akola", "Amravati", "Aurangabad", "Beed", "Bhandara", "Buldhana", "Chandrapur", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur", "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded", "Nandurbar", "Nashik", "Osmanabad", "Palghar", "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane", "Wardha", "Washim", "Yavatmal"],
+      "Manipur": ["Bishnupur", "Chandel", "Churachandpur", "Imphal East", "Imphal West", "Jiribam", "Kakching", "Kamjong", "Kangpokpi", "Noney", "Pherzawl", "Senapati", "Tamenglong", "Tengnoupal", "Thoubal", "Ukhrul"],
+      "Meghalaya": ["East Garo Hills", "East Jaintia Hills", "East Khasi Hills", "Eastern West Khasi Hills", "North Garo Hills", "Ri Bhoi", "South Garo Hills", "South West Garo Hills", "South West Khasi Hills", "West Garo Hills", "West Jaintia Hills", "West Khasi Hills"],
+      "Mizoram": ["Aizawl", "Champhai", "Hnahthial", "Khawzawl", "Kolasib", "Lawngtlai", "Lunglei", "Mamit", "Saiha", "Saitual", "Serchhip"],
+      "Nagaland": ["Chumoukedima", "Dimapur", "Kiphire", "Kohima", "Longleng", "Mokokchung", "Mon", "Niuland", "Noklak", "Peren", "Phek", "Shamator", "Tseminyu", "Tuensang", "Wokha", "Zunheboto"],
+      "Odisha": ["Angul", "Balangir", "Balasore", "Bargarh", "Bhadrak", "Boudh", "Cuttack", "Deogarh", "Dhenkanal", "Gajapati", "Ganjam", "Jagatsinghpur", "Jajpur", "Jharsuguda", "Kalahandi", "Kandhamal", "Kendrapara", "Kendujhar", "Khordha", "Koraput", "Malkangiri", "Mayurbhanj", "Nabarangpur", "Nayagarh", "Nuapada", "Puri", "Rayagada", "Sambalpur", "Subarnapur", "Sundargarh"],
+      "Puducherry": ["Karaikal", "Mahe", "Puducherry", "Yanam"],
+      "Punjab": ["Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Malerkotla", "Mansa", "Moga", "Muktsar", "Pathankot", "Patiala", "Rupnagar", "Sahibzada Ajit Singh Nagar", "Sangrur", "Shahid Bhagat Singh Nagar", "Tarn Taran"],
+      "Rajasthan": ["Ajmer", "Alwar", "Anupgarh", "Balotra", "Banswara", "Baran", "Barmer", "Beawar", "Bharatpur", "Bhilwara", "Bikaner", "Bundi", "Chittorgarh", "Churu", "Dausa", "Deeg", "Dholpur", "Didwana-Kuchaman", "Dudu", "Dungarpur", "Ganganagar", "Gangapur City", "Hanumangarh", "Jaipur", "Jaipur Rural", "Jaisalmer", "Jalore", "Jhalawar", "Jhunjhunu", "Jodhpur", "Jodhpur Rural", "Karauli", "Kekri", "Khairthal-Tijara", "Kota", "Kotputli-Behror", "Nagaur", "Neem Ka Thana", "Pali", "Phalodi", "Pratapgarh", "Rajsamand", "Salumbar", "Sanchore", "Sawai Madhopur", "Shahpura", "Sikar", "Sirohi", "Tonk", "Udaipur"],
+      "Sikkim": ["East Sikkim", "North Sikkim", "Pakyong", "Soreng", "South Sikkim", "West Sikkim"],
+      "Tamil Nadu": ["Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul", "Erode", "Kallakurichi", "Kanchipuram", "Kanyakumari", "Karur", "Krishnagiri", "Madurai", "Mayiladuthurai", "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai", "Ramanathapuram", "Ranipet", "Salem", "Sivaganga", "Tenkasi", "Thanjavur", "Theni", "Thoothukudi", "Tiruchirappalli", "Tirunelveli", "Tirupattur", "Tiruppur", "Tiruvallur", "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", "Virudhunagar"],
+      "Telangana": ["Adilabad", "Bhadradri Kothagudem", "Hanamkonda", "Hyderabad", "Jagtial", "Jangaon", "Jayashankar Bhupalpally", "Jogulamba Gadwal", "Kamareddy", "Karimnagar", "Khammam", "Komaram Bheem Asifabad", "Mahabubabad", "Mahabubnagar", "Mancherial", "Medak", "Medchal-Malkajgiri", "Mulugu", "Nagarkurnool", "Nalgonda", "Narayanpet", "Nirmal", "Nizamabad", "Peddapalli", "Rajanna Sircilla", "Ranga Reddy", "Sangareddy", "Siddipet", "Suryapet", "Vikarabad", "Wanaparthy", "Warangal", "Yadadri Bhuvanagiri"],
+      "Tripura": ["Dhalai", "Gomati", "Khowai", "North Tripura", "Sepahijala", "South Tripura", "Unakoti", "West Tripura"],
+      "Uttar Pradesh": ["Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Ayodhya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Budaun", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kasganj", "Kaushambi", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Prayagraj", "Raebareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"],
+      "Uttarakhand": ["Almora", "Bageshwar", "Chamoli", "Champawat", "Dehradun", "Haridwar", "Nainital", "Pauri Garhwal", "Pithoragarh", "Rudraprayag", "Tehri Garhwal", "Udham Singh Nagar", "Uttarkashi"],
+      "West Bengal": ["Alipurduar", "Bankura", "Birbhum", "Cooch Behar", "Dakshin Dinajpur", "Darjeeling", "Hooghly", "Howrah", "Jalpaiguri", "Jhargram", "Kalimpong", "Kolkata", "Malda", "Murshidabad", "Nadia", "North 24 Parganas", "Paschim Bardhaman", "Paschim Medinipur", "Purba Bardhaman", "Purba Medinipur", "Purulia", "South 24 Parganas", "Uttar Dinajpur"]
+    };
+
+    const statePortals = {
+      "Bihar": { legalAid: "https://patnahighcourt.gov.in/bslsa/" },
+      "Uttar Pradesh": { legalAid: "https://upslsa.upsdc.gov.in/" },
+      "Delhi": { legalAid: "https://dslsa.org/" },
+      "Maharashtra": { legalAid: "https://bombayhighcourt.nic.in/mslsa/" },
+      "Rajasthan": { legalAid: "https://rlsa.gov.in/" }
+    };
+
+    const globalHelplines = [
+      { name: "National Emergency Number (ERSS)", number: "112", category: "Emergency & Police" },
+      { name: "Direct Police Helpline", number: "100", category: "Emergency & Police" },
+      { name: "Women Helpline", number: "181", category: "Women & Safety" },
+      { name: "Cyber Crime Helpline", number: "1930", category: "Cyber & Fraud" },
+      { name: "National Legal Services Authority (NALSA)", number: "15100", category: "Legal Aid" },
+      { name: "Child Helpline", number: "1098", category: "Child Welfare" },
+      { name: "Senior Citizen Helpline", number: "14567", category: "Senior Citizens" },
+      { name: "National Consumer Helpline", number: "1915", category: "Consumer Rights" },
+      { name: "Disaster Management (NDMA)", number: "1078", category: "Disaster" }
+    ];
+
+    const allStates = Object.keys(indiaData).sort();
+
+    // DOM Elements
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const backBtn = document.getElementById('backBtn');
+    const userLocationDisplay = document.getElementById('userLocationDisplay');
+    const historySidebar = document.getElementById('historySidebar');
+    const historyToggleBtn = document.getElementById('historyToggleBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+
+    const stateInput = document.getElementById('stateInput');
+    const stateList = document.getElementById('stateList');
+    const clearStateBtn = document.getElementById('clearState');
+    const dropStateIcon = document.getElementById('dropState');
+    
+    const districtInput = document.getElementById('districtInput');
+    const districtList = document.getElementById('districtList');
+    const clearDistrictBtn = document.getElementById('clearDistrict');
+    const dropDistrictIcon = document.getElementById('dropDistrict');
+    
+    const problemInput = document.getElementById('problemInput');
+    const charCount = document.getElementById('charCount');
+    const micBtn = document.getElementById('micBtn');
+    const submitIssueBtn = document.getElementById('submitIssueBtn');
+    const maxChars = 500;
+
+    const featuresGridContainer = document.getElementById('featuresGridContainer');
+    const featureDetailView = document.getElementById('featureDetailView');
+    const detailTitle = document.getElementById('detailTitle');
+    const detailContent = document.getElementById('detailContent');
+
+    let isSpeaking = false;
+    let currentSpeechText = "";
+
+    // --- Smart Draft Formatting ---
+    function formatDraftText(text) {
+      if (!text) return "";
+      if (text.split('\n').length > 5) return text;
+      
+      let formatted = text
+        .replace(/^To,?\s*/gi, "To,\n")
+        .replace(/Subject:\s*/gi, "\n\nSubject: ")
+        .replace(/(Respected Sir\/Madam,|Dear Sir\/Madam,|Respected Sir,|Dear Sir,)\s*/gi, "\n\n$1\n\n")
+        .replace(/(Thanking you\.?|Thank you\.?)\s*/gi, "\n\n$1\n\n")
+        .replace(/(Yours faithfully,|Yours sincerely,|Yours truly,)\s*/gi, "$1\n")
+        .replace(/,\s*(Mobile:|Phone:|Contact:)/gi, "\n$1")
+        .replace(/,\s*(Address:)/gi, "\n$1");
+        
+      return formatted.trim();
+    }
+
+    // --- Theme Toggling ---
+    window.toggleTheme = function() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      if (currentTheme === 'dark') {
+        html.setAttribute('data-theme', 'light');
+        themeToggleBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Dark Mode`;
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        themeToggleBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="19.78" x2="19.78" y2="21.2"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="4.22" x2="19.78" y2="5.64"/></svg> Light Mode`;
+      }
+    };
+
+    // --- Teammate Feature Tool Functions ---
+    window.openFeature = function(type) {
+      featuresGridContainer.style.display = 'none';
+      featureDetailView.classList.add('active');
+
+      const userState = stateInput.value || "Your State";
+      const userDistrict = districtInput.value || "Your District";
+      const portals = statePortals[userState] || { legalAid: "https://nalsa.gov.in/" };
+
+      if (type === 'consumer') {
+        detailTitle.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg> Consumer Redressal Checklist`;
+        detailContent.innerHTML = `
+          <p>Follow this checklist if you are disputing fraudulent goods, faulty services, or unfair billing in <strong>${userState}</strong>:</p>
+          <br>
+          <label class="checklist-item"><input type="checkbox"><span>Step 1: Gather original purchase receipts, warranty cards, and communication logs.</span></label>
+          <label class="checklist-item"><input type="checkbox"><span>Step 2: Send a formal written grievance/legal notice to the merchant or manufacturer.</span></label>
+          <label class="checklist-item"><input type="checkbox"><span>Step 3: If unresolved within 30 days, file an online claim on the National Consumer Helpline portal.</span></label>
+          
+          <div class="dlsa-box">
+            <strong>📍 Local Consumer Support (${userDistrict}, ${userState}):</strong> Consumer disputes can be registered directly with the District Consumer Disputes Redressal Commission or via state consumer forums.
+          </div>
+
+          <div style="margin-top: 15px;">
+            <a href="https://consumerhelpline.gov.in/" target="_blank" class="external-link-btn">🔗 National Consumer Portal</a>
+            <a href="${portals.legalAid}" target="_blank" class="external-link-btn">🔗 ${userState} Legal Services</a>
+            <button class="copy-btn" onclick="copySummary('Consumer Guide: Gather invoice, send merchant notice, register claim on NCH portal.')">📋 Copy Checklist</button>
+          </div>`;
+      } else if (type === 'helplines') {
+        detailTitle.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Emergency & Legal Helplines`;
+        detailContent.innerHTML = `
+          <p>Search through official national and state emergency, legal aid, and safety helpline numbers instantly:</p>
+          <br>
+          <input type="text" id="helplineSearchInput" class="helpline-search-input" placeholder="Search by name, category (e.g., Police, Cyber, Women)..." oninput="filterHelplines()">
+          <div class="helpline-list" id="helplineContainer"></div>
+          
+          <div style="margin-top: 15px;">
+            <a href="https://indianhelpline.com/" target="_blank" class="external-link-btn">🔗 Visit indianhelpline.com Directory</a>
+          </div>`;
+        renderHelplines(globalHelplines);
+      } else if (type === 'fir') {
+        detailTitle.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Police & ${userState} CCTNS Protocols`;
+        detailContent.innerHTML = `
+          <p>Know your legal rights when interacting with police stations or reporting offenses in <strong>${userState}</strong>:</p>
+          <br>
+          <label class="checklist-item"><input type="checkbox"><span>Step 1: File a Zero FIR at <em>any</em> nearest police station if local jurisdiction is disputed.</span></label>
+          <label class="checklist-item"><input type="checkbox"><span>Step 2: Demand your legally mandated free copy of the registered FIR immediately.</span></label>
+          <label class="checklist-item"><input type="checkbox"><span>Step 3: If the SHO refuses to file your FIR, escalate the written complaint to the SP under Sec 154(3) CrPC / BNSS.</span></label>
+          
+          <div class="dlsa-box">
+            <strong>📍 Regional & State Portals for ${userState}:</strong> 
+            <ul style="margin-left: 18px; margin-top: 5px;">
+              <li>National Digital Police Portal: <a href="https://digitalpolice.gov.in/" target="_blank" style="color: var(--primary-color); font-weight: 600;">CCTNS Link</a></li>
+              <li>Cyber Crime Reporting: <a href="https://cybercrime.gov.in/" target="_blank" style="color: var(--primary-color); font-weight: 600;">cybercrime.gov.in</a></li>
+            </ul>
+          </div>
+
+          <div style="margin-top: 15px;">
+            <a href="https://digitalpolicecitizenservices.gov.in/" target="_blank" class="external-link-btn">🔗 CCTNS Citizen Services</a>
+            <button class="copy-btn" onclick="copySummary('FIR Guide: Insist on Zero FIR, demand free copy, escalate to SP if refused.')">📋 Copy Checklist</button>
+          </div>`;
+      }
+    };
+
+    window.renderHelplines = function(items) {
+      const container = document.getElementById('helplineContainer');
+      if (!container) return;
+      container.innerHTML = '';
+      if (items.length === 0) {
+        container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 20px;">No helplines found.</p>`;
+        return;
+      }
+      items.forEach(h => {
+        container.innerHTML += `
+          <div class="helpline-card">
+            <div class="helpline-info">
+              <h4>${h.name}</h4>
+              <p>Category: ${h.category}</p>
+            </div>
+            <a href="tel:${h.number}" class="helpline-number">
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> 
+              ${h.number}
+            </a>
+          </div>`;
+      });
+    };
+
+    window.filterHelplines = function() {
+      const query = document.getElementById('helplineSearchInput').value.toLowerCase();
+      const filtered = globalHelplines.filter(h => h.name.toLowerCase().includes(query) || h.category.toLowerCase().includes(query) || h.number.includes(query));
+      renderHelplines(filtered);
+    };
+
+    window.closeFeature = function() {
+      featureDetailView.classList.remove('active');
+      featuresGridContainer.style.display = 'grid';
+    };
+
+    window.copySummary = function(text) {
+      navigator.clipboard.writeText(text).then(() => { alert("Checklist summary copied!"); });
+    };
+
+    // --- Tab Switching Logic ---
+    window.switchTab = function(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+      
+      document.querySelector(`[data-target="${tabId}"]`).classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    };
+
+    // --- Toggle Sidebar Drawer ---
+    historyToggleBtn.addEventListener('click', () => {
+      historySidebar.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!historySidebar.contains(e.target) && !historyToggleBtn.contains(e.target)) {
+        historySidebar.classList.remove('open');
+      }
+    });
+
+    // --- New Consultation (Reset Screen) ---
+    window.startNewChat = function() {
+      if(isSpeaking) window.toggleReadAloud(); // Stop speaking on new chat
+      step2.style.display = 'none';
+      step1.style.display = 'flex';
+      step1.classList.add('fade-in');
+      problemInput.value = '';
+      document.getElementById('resultContainer').style.display = 'none';
+      historySidebar.classList.remove('open');
+    };
+
+    // --- On Load: Check LocalStorage ---
+    window.onload = () => {
+      const savedState = localStorage.getItem('awaaz_state');
+      const savedDistrict = localStorage.getItem('awaaz_district');
+      
+      if (savedState && indiaData[savedState]) {
+        stateInput.value = savedState;
+        clearStateBtn.style.display = 'block';
+        dropStateIcon.style.display = 'none';
+        
+        districtInput.disabled = false;
+        districtInput.placeholder = "Select your district...";
+        
+        if (savedDistrict && indiaData[savedState].includes(savedDistrict)) {
+          districtInput.value = savedDistrict;
+          clearDistrictBtn.style.display = 'block';
+          dropDistrictIcon.style.display = 'none';
+        }
+      }
+      loadHistoryUI();
+    };
+
+    // --- Toggle Clear & Dropdown Icon Logic ---
+    function handleIconToggle(inputElem, clearBtn, dropIcon, onClear) {
+      inputElem.addEventListener('input', () => {
+        const hasText = inputElem.value.length > 0;
+        clearBtn.style.display = hasText ? 'block' : 'none';
+        dropIcon.style.display = hasText ? 'none' : 'flex';
+      });
+      
+      clearBtn.addEventListener('click', () => {
+        inputElem.value = '';
+        clearBtn.style.display = 'none';
+        dropIcon.style.display = 'flex';
+        inputElem.focus();
+        if (onClear) onClear();
+      });
+    }
+
+    handleIconToggle(stateInput, clearStateBtn, dropStateIcon, () => {
+      districtInput.value = '';
+      districtInput.disabled = true;
+      districtInput.placeholder = "Select state first...";
+      clearDistrictBtn.style.display = 'none';
+      dropDistrictIcon.style.display = 'flex';
+      localStorage.removeItem('awaaz_state');
+      localStorage.removeItem('awaaz_district');
+    });
+
+    handleIconToggle(districtInput, clearDistrictBtn, dropDistrictIcon, () => {
+      localStorage.removeItem('awaaz_district');
+    });
+
+    // --- Setup Custom Autocomplete ---
+    function setupAutocomplete(input, listElement, clearBtn, dropIcon, getItems, onSelect) {
+      let filtered = [];
+      let currentFocus = -1; 
+
+      function renderSuggestions() {
+        const query = input.value.trim().toLowerCase();
+        const items = getItems();
+        filtered = items.filter(item => item.toLowerCase().includes(query));
+        currentFocus = -1;
+
+        listElement.innerHTML = '';
+        if (filtered.length === 0) {
+          listElement.style.display = 'none';
+          return;
+        }
+
+        filtered.forEach(item => {
+          const li = document.createElement('li');
+          const regex = new RegExp(`(${query})`, "gi");
+          li.innerHTML = item.replace(regex, "<strong>$1</strong>");
+
+          function handleSelect(e) {
+            e.preventDefault(); 
+            selectItem(item);
+          }
+          
+          li.addEventListener('mousedown', handleSelect);
+          li.addEventListener('dblclick', handleSelect); 
+          listElement.appendChild(li);
+        });
+        listElement.style.display = 'block';
+      }
+
+      function selectItem(val) {
+        input.value = val;
+        clearBtn.style.display = 'block';
+        dropIcon.style.display = 'none';
+        listElement.style.display = 'none';
+        if (onSelect) onSelect(val);
+      }
+
+      input.addEventListener('input', renderSuggestions);
+      input.addEventListener('focus', renderSuggestions);
+      input.addEventListener('click', renderSuggestions);
+
+      input.addEventListener('keydown', (e) => {
+        let items = listElement.getElementsByTagName('li');
+        if (e.key === 'ArrowDown') {
+          currentFocus++;
+          addActive(items);
+        } else if (e.key === 'ArrowUp') {
+          currentFocus--;
+          addActive(items);
+        } else if (e.key === 'Enter') {
+          e.preventDefault(); 
+          if (currentFocus > -1) {
+            if (items) selectItem(filtered[currentFocus]);
+          } else if (filtered.length === 1) {
+            selectItem(filtered[0]);
+          }
+        }
+      });
+
+      function addActive(items) {
+        if (!items) return false;
+        removeActive(items);
+        if (currentFocus >= items.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = items.length - 1;
+        items[currentFocus].classList.add('active');
+        items[currentFocus].scrollIntoView({ block: "nearest" }); 
+      }
+
+      function removeActive(items) {
+        for (let i = 0; i < items.length; i++) {
+          items[i].classList.remove('active');
+        }
+      }
+
+      input.addEventListener('blur', () => {
+        setTimeout(() => { listElement.style.display = 'none'; }, 150);
+      });
+    }
+
+    setupAutocomplete(stateInput, stateList, clearStateBtn, dropStateIcon, () => allStates, (selectedState) => {
+      districtInput.disabled = false;
+      districtInput.placeholder = "Select your district...";
+      districtInput.value = '';
+      clearDistrictBtn.style.display = 'none';
+      dropDistrictIcon.style.display = 'flex';
+      districtInput.focus(); 
+    });
+
+    setupAutocomplete(districtInput, districtList, clearDistrictBtn, dropDistrictIcon, () => {
+      const state = stateInput.value.trim();
+      return (indiaData[state] || []).sort();
+    }, (selectedDistrict) => {
+      districtInput.blur();
+    });
+
+    stateInput.addEventListener('input', () => {
+      if (!indiaData[stateInput.value.trim()]) {
+        districtInput.disabled = true;
+        districtInput.placeholder = "Select state first...";
+        districtInput.value = '';
+        clearDistrictBtn.style.display = 'none';
+        dropDistrictIcon.style.display = 'flex';
+      }
+    });
+
+    // --- STEP TRANSITION LOGIC ---
+    step1.addEventListener('submit', (e) => {
+      e.preventDefault(); 
+      
+      const selectedState = stateInput.value.trim();
+      const selectedDistrict = districtInput.value.trim();
+
+      if (indiaData[selectedState] && indiaData[selectedState].includes(selectedDistrict)) {
+        localStorage.setItem('awaaz_state', selectedState);
+        localStorage.setItem('awaaz_district', selectedDistrict);
+        userLocationDisplay.textContent = `${selectedDistrict}, ${selectedState}`;
+
+        step1.style.display = 'none';
+        step2.style.display = 'flex';
+        step2.classList.add('fade-in');
+      } else {
+        step1.classList.remove('shake-error');
+        void step1.offsetWidth; 
+        stateInput.style.borderColor = "var(--error-color)";
+        districtInput.style.borderColor = "var(--error-color)";
+        
+        setTimeout(() => {
+          stateInput.style.borderColor = "var(--border-glass)";
+          districtInput.style.borderColor = "var(--border-glass)";
+        }, 1500);
+      }
+    });
+
+    backBtn.addEventListener('click', () => {
+        if(isSpeaking) window.toggleReadAloud();
+        step2.style.display = 'none';
+        step1.style.display = 'flex';
+        step1.classList.add('fade-in');
+        document.getElementById('resultContainer').style.display = 'none';
+    });
+
+    // --- CHATBOX & VOICE LOGIC ---
+    function updateCharCount() {
+      const currentLength = problemInput.value.length;
+      charCount.textContent = `${currentLength} / ${maxChars}`;
+      if (currentLength >= maxChars) {
+        charCount.classList.add('limit-reached');
+      } else {
+        charCount.classList.remove('limit-reached');
+      }
+    }
+
+    problemInput.addEventListener('input', updateCharCount);
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+    let isDictating = false;
+
+    if (SpeechRecognition) {
+      recognition = new SpeechRecognition();
+      recognition.continuous = false; 
+      recognition.interimResults = false;
+      recognition.lang = 'en-IN'; 
+
+      recognition.onstart = () => {
+        isDictating = true;
+        micBtn.classList.add('recording');
+        problemInput.placeholder = "Listening... Speak now.";
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const currentText = problemInput.value;
+        let newText = currentText + (currentText.length > 0 && !currentText.endsWith(' ') ? " " : "") + transcript;
+        problemInput.value = newText.substring(0, maxChars); 
+        updateCharCount();
+      };
+
+      recognition.onerror = () => { stopRecording(); };
+      recognition.onend = () => { stopRecording(); };
+    } else {
+      micBtn.style.display = 'none';
+    }
+
+    function stopRecording() {
+      isDictating = false;
+      micBtn.classList.remove('recording');
+      problemInput.placeholder = "E.g., I have an issue regarding potholes on the main road causing accidents...";
+    }
+
+    micBtn.addEventListener('click', () => {
+      if (!isDictating) { recognition.start(); } else { recognition.stop(); }
+    });
+
+    // --- LOCALSTORAGE HISTORY FUNCTIONS ---
+    function saveToHistory(payload, responseData) {
+      let history = JSON.parse(localStorage.getItem('awaaz_history') || '[]');
+      const newItem = {
+        id: Date.now(),
+        issue: payload.issue_description,
+        location: `${payload.district}, ${payload.state}`,
+        date: new Date().toLocaleDateString(),
+        data: responseData
+      };
+      
+      history.unshift(newItem);
+      if (history.length > 15) history.pop();
+      
+      localStorage.setItem('awaaz_history', JSON.stringify(history));
+      loadHistoryUI(newItem.id);
+    }
+
+    function loadHistoryUI(activeId = null) {
+      const historyList = document.getElementById('historyList');
+      const history = JSON.parse(localStorage.getItem('awaaz_history') || '[]');
+
+      if (history.length === 0) {
+        historyList.innerHTML = `<div style="padding: 10px; font-size: 0.8rem; color: var(--text-muted);">No recent chats.</div>`;
+        return;
+      }
+
+      historyList.innerHTML = '';
+      history.forEach(item => {
+        const div = document.createElement('div');
+        div.className = `history-item ${activeId === item.id ? 'active' : ''}`;
+        div.innerHTML = `
+          <span class="history-item-text" title="${item.issue}">${item.issue}</span>
+          <button class="delete-item-btn" title="Delete chat" onclick="deleteHistoryItem(event, ${item.id})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        `;
+        div.onclick = (e) => {
+          if (e.target.closest('.delete-item-btn')) return;
+          if (isSpeaking) window.toggleReadAloud(); // Stop reading if switching chats
+          
+          document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+          div.classList.add('active');
+
+          step1.style.display = 'none';
+          step2.style.display = 'flex';
+          userLocationDisplay.textContent = item.location;
+          problemInput.value = item.issue;
+          renderTabbedResults(item.data);
+          historySidebar.classList.remove('open');
+        };
+        historyList.appendChild(div);
+      });
+    }
+
+    window.deleteHistoryItem = function(event, id) {
+      event.stopPropagation();
+      let history = JSON.parse(localStorage.getItem('awaaz_history') || '[]');
+      history = history.filter(item => item.id !== id);
+      localStorage.setItem('awaaz_history', JSON.stringify(history));
+      loadHistoryUI();
+    }
+
+    window.clearHistory = function() {
+      localStorage.removeItem('awaaz_history');
+      loadHistoryUI();
+    }
+
+    // --- TEXT-TO-SPEECH (TTS) FUNCTION ---
+    window.toggleReadAloud = function() {
+      const btn = document.getElementById('readAloudBtn');
+      if (!btn) return;
+
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Read Aloud`;
+        btn.classList.remove('speaking');
+        return;
+      }
+
+      if (!currentSpeechText) return;
+
+      const utterance = new SpeechSynthesisUtterance(currentSpeechText);
+      utterance.lang = 'en-IN'; // Indian English accent
+      
+      utterance.onend = () => {
+        isSpeaking = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Read Aloud`;
+        btn.classList.remove('speaking');
+      };
+
+      utterance.onerror = () => {
+        isSpeaking = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg> Read Aloud`;
+        btn.classList.remove('speaking');
+      };
+
+      window.speechSynthesis.speak(utterance);
+      isSpeaking = true;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12"/></svg> Stop Reading`;
+      btn.classList.add('speaking');
+    };
+
+    // --- FASTAPI BACKEND SUBMISSION & TABBED RENDERER ---
+    submitIssueBtn.addEventListener('click', async () => {
+      const payload = {
+        issue_description: problemInput.value.trim(),
+        state: stateInput.value.trim(),
+        district: districtInput.value.trim(),
+        preferred_language: "English"
+      };
+
+      if (!payload.issue_description) {
+        alert("Please describe your problem before submitting.");
+        return;
+      }
+
+      try {
+        if(isSpeaking) window.toggleReadAloud(); // Stop reading current text
+        submitIssueBtn.textContent = "Analyzing Rights...";
+        submitIssueBtn.disabled = true;
+
+        const response = await fetch("/api/navigate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to get response from Rights Navigator API.");
+        }
+
+        const data = await response.json();
+        saveToHistory(payload, data);
+        renderTabbedResults(data);
+
+      } catch (error) {
+        console.error("Connection Error:", error);
+        alert("Could not connect to FastAPI backend. Make sure uvicorn is running on port 8000!");
+      } finally {
+        submitIssueBtn.textContent = "Submit Issue";
+        submitIssueBtn.disabled = false;
+      }
+    });
+
+    function renderTabbedResults(data) {
+      const advice = data.section_1_advice;
+      const impl = data.section_2_implementation;
+      const contact = impl.contact_info;
+
+      let stepsHtml = impl.step_by_step_execution.map(step => `<li><strong>Step ${step.step_number}:</strong> ${step.instruction}</li>`).join('');
+      let rightsHtml = advice.applicable_rights.map(right => `<li>${right}</li>`).join('');
+      
+      // Auto-format the LLM draft text into proper letter format
+      let formattedDraft = formatDraftText(impl.draft_text_to_submit);
+
+      // Compile clear text for TTS
+      let rightsText = advice.applicable_rights.join('. ');
+      let stepsText = impl.step_by_step_execution.map(step => `Step ${step.step_number}: ${step.instruction}`).join('. ');
+      currentSpeechText = `Here is your Situation Analysis. ${advice.situation_analysis} Your Applicable Rights are: ${rightsText}. The official action portal is ${impl.target_authority_or_portal}. Here are the execution steps: ${stepsText}.`;
+
+      let resultContainer = document.getElementById('resultContainer');
+      resultContainer.style.display = 'block';
+
+      resultContainer.innerHTML = `
+        <div class="tabs-container">
+          <div class="tabs-header">
+            <button class="tab-btn active" data-target="tab-overview" onclick="switchTab('tab-overview')">
+              <svg viewBox="0 0 24 24"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h18"/></svg>
+              Overview & Rights
+            </button>
+            <button class="tab-btn" data-target="tab-action" onclick="switchTab('tab-action')">
+              <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              Action Plan
+            </button>
+            <button class="tab-btn" data-target="tab-draft" onclick="switchTab('tab-draft')">
+              <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Legal Draft
+            </button>
+            
+            <button id="readAloudBtn" class="tts-btn" style="margin-left: auto;" onclick="toggleReadAloud()">
+              <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              Read Aloud
+            </button>
+          </div>
+
+          <!-- TAB 1: Overview -->
+          <div class="tab-pane active" id="tab-overview">
+            <div class="bento-card">
+              <h3>
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Situation Analysis
+              </h3>
+              <p>${advice.situation_analysis}</p>
+            </div>
+            <div class="bento-card">
+              <h3>
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Applicable Rights
+              </h3>
+              <ul>${rightsHtml}</ul>
+            </div>
+          </div>
+
+          <!-- TAB 2: Action Plan -->
+          <div class="tab-pane" id="tab-action">
+            <div class="bento-card">
+              <h3>
+                <svg viewBox="0 0 24 24"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+                Official Action Portal
+              </h3>
+              <p><strong>Authority:</strong> ${impl.target_authority_or_portal}</p>
+              <div class="contact-row">
+                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <p><strong>Support Contact:</strong> ${contact.phone_number} (${contact.availability_days})</p>
+              </div>
+              <a href="${impl.portal_url}" target="_blank" class="portal-link-btn">
+                <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Open Portal
+              </a>
+            </div>
+            <div class="bento-card">
+              <h3>
+                <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                Execution Steps
+              </h3>
+              <ol>${stepsHtml}</ol>
+            </div>
+          </div>
+
+          <!-- TAB 3: Legal Draft -->
+          <div class="tab-pane" id="tab-draft">
+            <div class="bento-card full-width" style="height: 100%;">
+              <div class="draft-header-row">
+                <h3 style="border: none; padding: 0; margin: 0;">
+                  <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                  Ready-to-Use Draft Text
+                </h3>
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" class="copy-btn" id="copyDraftBtn" onclick="copyDraftText()">
+                    <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copy Draft
+                  </button>
+                  <button type="button" class="copy-btn" onclick="downloadDraftPDF()">
+                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Download PDF
+                  </button>
+                </div>
+              </div>
+              <textarea id="draftTextArea" readonly style="width:100%; min-height: 250px; padding:12px; font-size:0.9rem; font-family: inherit; line-height: 1.6; border:1px solid var(--border-glass); border-radius:8px; background:var(--card-bg); color:var(--text-main); resize:vertical; margin-top: 8px;">${formattedDraft}</textarea>
+            </div>
+          </div>
+
+        </div>
+      `;
+      
+      resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // --- COPY TO CLIPBOARD FUNCTION ---
+    window.copyDraftText = function() {
+      const draftArea = document.getElementById('draftTextArea');
+      const copyBtn = document.getElementById('copyDraftBtn');
+      
+      if (!draftArea) return;
+
+      navigator.clipboard.writeText(draftArea.value).then(() => {
+        copyBtn.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!`;
+        copyBtn.classList.add("copied");
+
+        setTimeout(() => {
+          copyBtn.innerHTML = `<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy Draft`;
+          copyBtn.classList.remove("copied");
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    };
+
+    // --- DOWNLOAD PDF FUNCTION ---
+    window.downloadDraftPDF = function() {
+      const draftArea = document.getElementById('draftTextArea');
+      if (!draftArea || !draftArea.value) {
+        alert("No draft text available to download.");
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.text("Awaaz AI - Official Legal Draft", 15, 20);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 15, 28);
+
+      doc.setDrawColor(150);
+      doc.line(15, 33, 195, 33);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      const splitText = doc.splitTextToSize(draftArea.value, 180);
+      doc.text(splitText, 15, 42);
+
+      doc.save("Awaaz_AI_Legal_Draft.pdf");
+    };
+
+    // --- MULTILINGUAL ASSISTANT LOGIC ---
+    const assistantFab = document.getElementById('assistantFab');
+    const assistantWindow = document.getElementById('assistantWindow');
+    const closeAssistant = document.getElementById('closeAssistant');
+    const chatBox = document.getElementById('assistantChat');
+
+    const botData = {
+      "English": {
+        greeting: "Hello! I am Awaaz Sahayak. Please select your language:",
+        welcome: "Great! Let's get started. How do you want to use this site?",
+        optState: "What does 'State' mean?",
+        ansState: "'State' is your region/state (e.g., Bihar, Maharashtra). Click the first box to choose yours.",
+        optDistrict: "What does 'District' mean?",
+        ansDistrict: "'District' is your local city/district area. Choose your state first to unlock this box!",
+        optProblem: "How do I type my problem?",
+        ansProblem: "After selecting your location, you can type your issue in the box or click the microphone icon to speak your problem out loud!"
+      },
+      "हिंदी (Hindi)": {
+        greeting: "नमस्ते! मैं आवाज़ सहायक हूँ। कृपया अपनी भाषा चुनें:",
+        welcome: "बहुत बढ़िया! चलिए शुरू करते हैं। आप क्या जानना चाहते हैं?",
+        optState: "'State' (राज्य) का क्या मतलब है?",
+        ansState: "'State' का मतलब आपका **राज्य** है (जैसे बिहार, उत्तर प्रदेश)। अपना राज्य चुनने के लिए पहले बॉक्स पर क्लिक करें।",
+        optDistrict: "'District' (ज़िला) का क्या मतलब है?",
+        ansDistrict: "'District' का मतलब आपका **ज़िला** है। इसे खोलने के लिए पहले अपना राज्य चुनें!",
+        optProblem: "मैं अपनी समस्या कैसे दर्ज करूँ?",
+        ansProblem: "स्थान चुनने के बाद, आप बॉक्स में टाइप कर सकते हैं या बोलकर लिखने के लिए माइक बटन दबा सकते हैं!"
+      }
+    };
+
+    const languages = Object.keys(botData);
+
+    function addBotMsg(text) {
+      chatBox.innerHTML += `<div class="chat-msg bot-msg">${text}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    
+    function addUserMsg(text) {
+      chatBox.innerHTML += `<div class="chat-msg user-msg">${text}</div>`;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function initAssistant() {
+      chatBox.innerHTML = ''; 
+      addBotMsg(botData["English"].greeting);
+      let langHtml = '<div class="lang-grid">';
+      languages.forEach(lang => {
+        langHtml += `<button class="lang-chip" onclick="setLanguage('${lang}')">${lang}</button>`;
+      });
+      langHtml += '</div>';
+      chatBox.innerHTML += langHtml;
+    }
+
+    window.setLanguage = function(lang) {
+      addUserMsg(lang);
+      const data = botData[lang] || botData["English"]; 
+      setTimeout(() => {
+        addBotMsg(data.welcome);
+        let actionHtml = `<div class="lang-grid">
+          <button class="action-chip" onclick="explainField('State', '${lang}')">${data.optState}</button>
+          <button class="action-chip" onclick="explainField('District', '${lang}')">${data.optDistrict}</button>
+          <button class="action-chip" onclick="explainField('Problem', '${lang}')">${data.optProblem}</button>
+        </div>`;
+        chatBox.innerHTML += actionHtml;
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 500);
+    };
+
+    window.explainField = function(field, lang) {
+      const data = botData[lang] || botData["English"];
+      let userQuery = data.optState;
+      let botAns = data.ansState;
+      
+      if (field === 'District') {
+        userQuery = data.optDistrict;
+        botAns = data.ansDistrict;
+      } else if (field === 'Problem') {
+        userQuery = data.optProblem;
+        botAns = data.ansProblem;
+      }
+
+      addUserMsg(userQuery);
+      setTimeout(() => { addBotMsg(botAns); }, 600);
+    };
+
+    initAssistant();
+
+    assistantFab.addEventListener('click', () => {
+      assistantWindow.classList.add('active');
+      assistantFab.style.display = 'none';
+    });
+
+    closeAssistant.addEventListener('click', () => {
+      assistantWindow.classList.remove('active');
+      assistantFab.style.display = 'flex';
+    });
+  </script>
+</body>
+</html>
