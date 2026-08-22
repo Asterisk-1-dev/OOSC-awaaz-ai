@@ -326,43 +326,48 @@
       .theme-toggle-btn { top: 15px; right: 15px; padding: 6px 10px;}
     }
 
-    /* --- MASTER LEGAL RIGHTS GUIDE PANEL CSS --- */
+    /* --- MASTER LEGAL RIGHTS GUIDE PANEL CSS (UPDATED FOR PERFECT GRID ALIGNMENT) --- */
     .app-layout { 
-      display: flex; 
-      justify-content: center; 
-      align-items: flex-start; 
+      display: grid;
+      grid-template-columns: 1fr minmax(auto, 900px) 1fr; /* This keeps the middle column DEAD CENTER always */
       gap: 20px; 
-      max-width: 1400px; 
       width: 100%; 
+      max-width: 100%; 
       margin: 0 auto; 
-      padding: 90px 20px 20px 20px; /* Pushed down so it doesn't hit the toggle buttons */
+      padding: 20px; /* Removed 90px top padding to stop double-pushing */
       min-height: 100vh; 
       box-sizing: border-box; 
     }
     
     .chat-main-container { 
-      flex: 1; 
+      grid-column: 2; /* Forces chat into the middle slot */
       width: 100%; 
-      max-width: 900px; 
       display: flex; 
       flex-direction: column; 
       align-items: center; 
     }
     
     .permanent-rights-panel { 
-      width: 360px; 
+      grid-column: 3; /* Forces panel into the right slot */
+      width: 340px; 
       height: calc(100vh - 120px); 
       background: var(--panel-bg); 
       border: 1px solid var(--border-glass); 
       border-radius: 20px; 
       padding: 20px; 
       box-sizing: border-box; 
-      display: flex; 
+      display: none; /* Hidden by default on Step 1 */
       flex-direction: column; 
       box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2); 
       backdrop-filter: blur(20px); 
       position: sticky; 
       top: 90px; 
+      margin-top: 100px; /* Matches the glass-panel top margin, fixes the overlap issue! */
+      justify-self: start; /* Pins it to the left side of the right column */
+    }
+
+    .permanent-rights-panel.active {
+      display: flex; /* Triggers visibility on Step 2 */
     }
     
     .permanent-rights-panel h3 { font-size: 1.15rem; color: var(--primary-color); margin: 0 0 6px 0; font-weight: 700; }
@@ -385,8 +390,9 @@
     .qa-answer li { margin-bottom: 4px; color: var(--text-muted); }
     .qa-answer strong { color: var(--primary-color); }
 
-    @media (max-width: 1024px) {
-      .app-layout { flex-direction: column; align-items: center; }
+    /* Stops layout from crushing on mid-sized laptop screens */
+    @media (max-width: 1400px) {
+      .app-layout { flex-direction: column; align-items: center; display: flex; }
       .permanent-rights-panel { width: 100%; max-width: 900px; height: auto; max-height: 500px; position: static; margin-top: 20px; }
     }
   </style>
@@ -543,9 +549,8 @@
 
     </main>
 
-
     <!-- 2. RIGHT SIDE: PERMANENT RIGHTS PANEL -->
-    <aside class="permanent-rights-panel">
+    <aside class="permanent-rights-panel" id="rightsPanel">
         <h3>Master Legal Rights Guide</h3>
         <p class="panel-desc">Verified emergency responses (Click to expand):</p>
         
@@ -781,6 +786,7 @@
     const historySidebar = document.getElementById('historySidebar');
     const historyToggleBtn = document.getElementById('historyToggleBtn');
     const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const rightsPanel = document.getElementById('rightsPanel');
 
     const stateInput = document.getElementById('stateInput');
     const stateList = document.getElementById('stateList');
@@ -966,6 +972,7 @@
       problemInput.value = '';
       document.getElementById('resultContainer').style.display = 'none';
       historySidebar.classList.remove('open');
+      rightsPanel.classList.remove('active'); // Hide panel
     };
 
     // --- On Load: Check LocalStorage ---
@@ -1146,6 +1153,8 @@
         step1.style.display = 'none';
         step2.style.display = 'flex';
         step2.classList.add('fade-in');
+        rightsPanel.classList.add('active'); // Show panel
+
       } else {
         step1.classList.remove('shake-error');
         void step1.offsetWidth; 
@@ -1165,6 +1174,7 @@
         step1.style.display = 'flex';
         step1.classList.add('fade-in');
         document.getElementById('resultContainer').style.display = 'none';
+        rightsPanel.classList.remove('active'); // Hide panel
     });
 
     // --- CHATBOX & VOICE LOGIC ---
@@ -1270,6 +1280,7 @@
           problemInput.value = item.issue;
           renderTabbedResults(item.data);
           historySidebar.classList.remove('open');
+          rightsPanel.classList.add('active'); // Show panel
         };
         historyList.appendChild(div);
       });
@@ -1558,6 +1569,7 @@
         ansProblem: "स्थान चुनने के बाद, आप बॉक्स में टाइप कर सकते हैं या बोलकर लिखने के लिए माइक बटन दबा सकते हैं!"
       }
     };
+
     const languages = Object.keys(botData);
 
     function addBotMsg(text) {
