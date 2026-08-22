@@ -109,11 +109,11 @@
     }
     .brand-name { font-size: 2.6rem; color: var(--text-main); font-weight: 800; letter-spacing: -0.5px; text-shadow: 0px 0px 20px var(--primary-glow); }
     .logo-img { 
-      width: 75px; /* Increased from 55px to make it larger */
+      width: 75px; 
       height: auto; 
       object-fit: contain; 
       filter: drop-shadow(0 0 10px var(--primary-glow)); 
-      background: transparent; /* Ensures no forced background color */
+      background: transparent; 
     }
 
     /* --- Slide-out Sidebar --- */
@@ -326,121 +326,69 @@
       .theme-toggle-btn { top: 15px; right: 15px; padding: 6px 10px;}
     }
 
-    /* PASTE AT THE VERY BOTTOM OF frontend/static/style.css */
+    /* --- MASTER LEGAL RIGHTS GUIDE PANEL CSS --- */
+    .app-layout { 
+      display: flex; 
+      justify-content: center; 
+      align-items: flex-start; 
+      gap: 20px; 
+      max-width: 1400px; 
+      width: 100%; 
+      margin: 0 auto; 
+      padding: 90px 20px 20px 20px; /* Pushed down so it doesn't hit the toggle buttons */
+      min-height: 100vh; 
+      box-sizing: border-box; 
+    }
+    
+    .chat-main-container { 
+      flex: 1; 
+      width: 100%; 
+      max-width: 900px; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+    }
+    
+    .permanent-rights-panel { 
+      width: 360px; 
+      height: calc(100vh - 120px); 
+      background: var(--panel-bg); 
+      border: 1px solid var(--border-glass); 
+      border-radius: 20px; 
+      padding: 20px; 
+      box-sizing: border-box; 
+      display: flex; 
+      flex-direction: column; 
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2); 
+      backdrop-filter: blur(20px); 
+      position: sticky; 
+      top: 90px; 
+    }
+    
+    .permanent-rights-panel h3 { font-size: 1.15rem; color: var(--primary-color); margin: 0 0 6px 0; font-weight: 700; }
+    .panel-desc { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px; }
+    
+    .categories-container { display: flex; flex-direction: column; gap: 14px; overflow-y: auto; flex: 1; padding-right: 6px; }
+    .categories-container::-webkit-scrollbar { width: 6px; }
+    .categories-container::-webkit-scrollbar-thumb { background: var(--border-glass); border-radius: 4px; }
+    
+    .rights-category { background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 12px; padding: 12px; }
+    .rights-category h4 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin: 0 0 10px 0; border-bottom: 1px solid var(--border-glass); padding-bottom: 6px; }
+    
+    .qa-card { background: var(--bg-deep); border: 1px solid var(--border-glass); border-radius: 8px; margin-bottom: 8px; overflow: hidden; transition: all 0.2s ease; }
+    .qa-card:last-child { margin-bottom: 0; }
+    .qa-card[open] { border-color: var(--primary-color); }
+    .qa-card summary { font-size: 0.85rem; font-weight: 600; color: var(--text-main); padding: 10px 12px; cursor: pointer; user-select: none; }
+    .qa-card summary:hover { color: var(--primary-color); background: var(--hover-bg); }
+    .qa-answer { padding: 10px 12px; font-size: 0.8rem; line-height: 1.5; color: var(--text-main); border-top: 1px solid var(--border-glass); background: var(--card-bg); }
+    .qa-answer ul { margin: 6px 0 0 0; padding-left: 18px; }
+    .qa-answer li { margin-bottom: 4px; color: var(--text-muted); }
+    .qa-answer strong { color: var(--primary-color); }
 
-.app-layout {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 20px;
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: 100vh;
-    box-sizing: border-box;
-}
-
-.permanent-rights-panel {
-    width: 340px;
-    height: calc(100vh - 40px);
-    background: var(--bg-card, #ffffff);
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 12px;
-    padding: 15px;
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.permanent-rights-panel h3 {
-    font-size: 1.05rem;
-    color: var(--text-main, #1e293b);
-    margin: 0 0 4px 0;
-}
-
-.panel-desc {
-    font-size: 0.8rem;
-    color: var(--text-muted, #64748b);
-    margin-bottom: 12px;
-}
-
-.categories-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow-y: auto;
-    flex: 1;
-    padding-right: 2px;
-}
-
-.rights-category {
-    background: var(--bg-subtle, #f8fafc);
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: 8px;
-    padding: 10px;
-}
-
-.rights-category h4 {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-muted, #475569);
-    margin: 0 0 8px 0;
-    border-bottom: 1px solid var(--border-color, #e2e8f0);
-    padding-bottom: 4px;
-}
-
-.qa-card {
-    background: var(--bg-card, #ffffff);
-    border: 1px solid var(--border-color, #cbd5e1);
-    border-radius: 6px;
-    margin-bottom: 6px;
-    overflow: hidden;
-    transition: all 0.2s ease;
-}
-
-.qa-card:last-child {
-    margin-bottom: 0;
-}
-
-.qa-card[open] {
-    border-color: #3b82f6;
-    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.08);
-}
-
-.qa-card summary {
-    font-size: 0.81rem;
-    font-weight: 600;
-    color: var(--text-main, #1e293b);
-    padding: 8px 10px;
-    cursor: pointer;
-    user-select: none;
-    background: inherit;
-}
-
-.qa-card summary:hover {
-    color: #2563eb;
-    background: rgba(59, 130, 246, 0.05);
-}
-
-.qa-answer {
-    padding: 8px 10px;
-    font-size: 0.78rem;
-    line-height: 1.4;
-    color: var(--text-main, #334155);
-    border-top: 1px solid var(--border-color, #f1f5f9);
-    background: inherit;
-}
-
-.qa-answer ul {
-    margin: 4px 0 0 0;
-    padding-left: 16px;
-}
-
-.qa-answer li {
-    margin-bottom: 3px;
-}
+    @media (max-width: 1024px) {
+      .app-layout { flex-direction: column; align-items: center; }
+      .permanent-rights-panel { width: 100%; max-width: 900px; height: auto; max-height: 500px; position: static; margin-top: 20px; }
+    }
   </style>
 </head>
 <body>
@@ -450,150 +398,6 @@
     <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="19.78" x2="19.78" y2="21.2"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="4.22" x2="19.78" y2="5.64"/></svg>
     Light Mode
   </button>
-
-  <!-- PASTE THIS ENTIRE BLOCK IN YOUR HTML -->
-<aside class="permanent-rights-panel">
-    <h3>Master Legal Rights Guide</h3>
-    <p class="panel-desc">Verified emergency responses (Click to expand):</p>
-    
-    <div class="categories-container">
-
-        <!-- Category 1 -->
-        <div class="rights-category">
-            <h4>Police Encounters & Stops</h4>
-            
-            <details class="qa-card">
-                <summary>Street Stop, Frisk & ID Checks</summary>
-                <div class="qa-answer">
-                    Police can stop you in public to ask your name and address only if they have reasonable suspicion.
-                    <ul>
-                        <li>You are not legally mandated to empty your pockets without formal grounds.</li>
-                        <li>Ask clearly: <em>"Am I being detained, or am I free to go?"</em></li>
-                    </ul>
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>What if police slap, beat, or torture you?</summary>
-                <div class="qa-answer">
-                    Police have <strong>zero legal authority</strong> to inflict physical violence. 
-                    <ul>
-                        <li><strong>Article 21</strong> protects your bodily integrity.</li>
-                        <li>Demand an immediate medical examination and report the officer to a Judicial Magistrate.</li>
-                    </ul>
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>Police Demanding Phone / Checking WhatsApp</summary>
-                <div class="qa-answer">
-                    Police <strong>cannot</strong> forcefully grab your phone or scroll through private chats without a formal court order or warrant.
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>Vehicle Checks & Traffic Stops</summary>
-                <div class="qa-answer">
-                    Traffic police can check documents, but a regular officer <strong>cannot search your car or luggage</strong> without a proper warrant or explicit probable cause.
-                </div>
-            </details>
-        </div>
-
-        <!-- Category 2 -->
-        <div class="rights-category">
-            <h4>Arrest & Custody Rights</h4>
-
-            <details class="qa-card">
-                <summary>Unwarranted / Illegal Arrest</summary>
-                <div class="qa-answer">
-                    An arrest without a warrant is illegal unless it involves a cognizable offense with direct evidence. Demand the exact <strong>grounds of arrest</strong> (Article 22).
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>The Mandatory 24-Hour Rule</summary>
-                <div class="qa-answer">
-                    Under <strong>Article 22(2)</strong>, anyone arrested <strong>must</strong> be produced before a Judicial Magistrate within <strong>24 hours</strong> (excluding travel time).
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>Right to Inform Family & Legal Aid</summary>
-                <div class="qa-answer">
-                    You have the absolute right to notify a family member about your arrest and consult a lawyer immediately.
-                </div>
-            </details>
-        </div>
-
-        <!-- Category 3 -->
-        <div class="rights-category">
-            <h4>Station, Raids & Interrogation</h4>
-
-            <details class="qa-card">
-                <summary>Police Raids & Searches at Home</summary>
-                <div class="qa-answer">
-                    Police generally cannot enter or search your house without a <strong>search warrant</strong> issued by a magistrate. You have the right to have independent neighborhood witnesses present.
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>Refusing to Sign Blank Papers / Confessions</summary>
-                <div class="qa-answer">
-                    <strong>Never sign blank papers or forced confessions.</strong> Under <strong>Article 20(3)</strong>, you are protected against self-incrimination, and station confessions are inadmissible.
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>Rights of Women During Arrest & Detention</summary>
-                <div class="qa-answer">
-                    <ul>
-                        <li>Women <strong>cannot</strong> be arrested between sunset and sunrise without prior judicial magistrate permission.</li>
-                        <li>A female officer must be present during arrest and body searches.</li>
-                    </ul>
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>Police Refusing to File an FIR</summary>
-                <div class="qa-answer">
-                    Filing an FIR is mandatory for cognizable offenses. If refused, mail your complaint to the Superintendent of Police (SP) or file a <strong>Zero FIR</strong> anywhere.
-                </div>
-            </details>
-        </div>
-
-        <!-- Category 4 -->
-        <div class="rights-category">
-            <h4>Public Assemblies & Protests</h4>
-
-            <details class="qa-card">
-                <summary>Protests, Gatherings & Section 144</summary>
-                <div class="qa-answer">
-                    Citizens have a right to peaceful assembly under Article 19. If Section 144 is imposed, police must issue a formal warning and disperse crowds lawfully before using force.
-                </div>
-            </details>
-        </div>
-
-        <!-- Category 5 -->
-        <div class="rights-category">
-            <h4>Fundamental Articles</h4>
-
-            <details class="qa-card">
-                <summary>Article 21: Life & Personal Liberty</summary>
-                <div class="qa-answer">
-                    Guarantees that no person can be deprived of life or personal liberty except according to established legal procedure.
-                </div>
-            </details>
-
-            <details class="qa-card">
-                <summary>Article 22: Safeguards Against Arbitrary Arrest</summary>
-                <div class="qa-answer">
-                    Provides the right to know arrest reasons, access legal counsel, and face a magistrate within 24 hours.
-                </div>
-            </details>
-        </div>
-
-    </div>
-</aside>
 
   <!-- Sidebar Toggle Button -->
   <button class="history-toggle-btn" id="historyToggleBtn" title="Expand Sidebar">
@@ -620,113 +424,271 @@
     </div>
   </div>
 
-  <!-- Header & Logo -->
-  <div class="header-container">
-    <img src="/static/awaaz.png" alt="Awaaz AI Logo" class="logo-img">
-    <h1 class="brand-name">Awaaz AI</h1>
-  </div>
 
-  <!-- STEP 1: Location Form (with initial load animation) -->
-  <form class="glass-panel initial-load" id="step1">
-    <div class="input-group">
-      <label for="stateInput">State</label>
-      <div class="input-wrapper">
-        <input type="text" id="stateInput" placeholder="Select your state..." autocomplete="off">
-        <span class="clear-btn" id="clearState" title="Clear selection">&times;</span>
-        <span class="dropdown-icon" id="dropState">
-          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </span>
-      </div>
-      <ul id="stateList" class="suggestions-list"></ul>
-    </div>
-
-    <div class="input-group">
-      <label for="districtInput">District</label>
-      <div class="input-wrapper">
-        <input type="text" id="districtInput" placeholder="Select state first..." autocomplete="off" disabled>
-        <span class="clear-btn" id="clearDistrict" title="Clear selection">&times;</span>
-        <span class="dropdown-icon" id="dropDistrict">
-          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </span>
-      </div>
-      <ul id="districtList" class="suggestions-list"></ul>
-    </div>
-
-    <button type="submit" class="btn">Continue</button>
-  </form>
-
-  <!-- STEP 2: Main AI Dashboard Interface -->
-  <div class="glass-panel" id="step2">
-    <h2>Legal Rights Navigator</h2>
-    <p class="subtitle">Providing civic assistance for residents of <strong id="userLocationDisplay" style="color:var(--primary-color);"></strong>.</p>
+  <!-- ============================================== -->
+  <!-- MAIN APP LAYOUT (Chat on Left, Rights on Right) -->
+  <!-- ============================================== -->
+  <div class="app-layout">
     
-    <!-- Quick Tool Feature Cards -->
-    <div class="features-grid" id="featuresGridContainer">
-      <div class="feature-card" onclick="openFeature('consumer')">
-        <div class="feature-icon-wrapper">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    <!-- 1. LEFT SIDE: YOUR MAIN CHAT APP -->
+    <main class="chat-main-container">
+      
+      <!-- Header & Logo -->
+      <div class="header-container">
+        <img src="/static/awaaz.png" alt="Awaaz AI Logo" class="logo-img">
+        <h1 class="brand-name">Awaaz AI</h1>
+      </div>
+
+      <!-- STEP 1: Location Form (with initial load animation) -->
+      <form class="glass-panel initial-load" id="step1">
+        <div class="input-group">
+          <label for="stateInput">State</label>
+          <div class="input-wrapper">
+            <input type="text" id="stateInput" placeholder="Select your state..." autocomplete="off">
+            <span class="clear-btn" id="clearState" title="Clear selection">&times;</span>
+            <span class="dropdown-icon" id="dropState">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+          </div>
+          <ul id="stateList" class="suggestions-list"></ul>
         </div>
-        <h3>Consumer Redressal</h3>
-        <p>Step-by-step resolution guides against faulty goods and services.</p>
-      </div>
-      <div class="feature-card" onclick="openFeature('helplines')">
-        <div class="feature-icon-wrapper">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+
+        <div class="input-group">
+          <label for="districtInput">District</label>
+          <div class="input-wrapper">
+            <input type="text" id="districtInput" placeholder="Select state first..." autocomplete="off" disabled>
+            <span class="clear-btn" id="clearDistrict" title="Clear selection">&times;</span>
+            <span class="dropdown-icon" id="dropDistrict">
+              <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </span>
+          </div>
+          <ul id="districtList" class="suggestions-list"></ul>
         </div>
-        <h3>Emergency Helplines</h3>
-        <p>Searchable directory of national & state emergency numbers.</p>
-      </div>
-      <div class="feature-card" onclick="openFeature('fir')">
-        <div class="feature-icon-wrapper">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <h3>Police & State CCTNS</h3>
-        <p>Zero FIR guidelines, national cyber crime portals, and state police portals.</p>
-      </div>
-    </div>
 
-    <!-- Feature Detail View -->
-    <div class="feature-detail-view" id="featureDetailView">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 id="detailTitle" style="color: var(--primary-color); font-size: 1.2rem; display: flex; align-items: center; gap: 8px;"></h3>
-        <button type="button" class="btn-secondary" onclick="closeFeature()" style="margin: 0; font-weight: 600;">&larr; Close Guide</button>
-      </div>
-      <div id="detailContent" style="font-size: 0.9rem; color: var(--text-main); line-height: 1.5; margin-top: 10px;"></div>
-    </div>
+        <button type="submit" class="btn">Continue</button>
+      </form>
 
-    <hr style="border: 0; border-top: 1px solid var(--border-glass); margin: 5px 0 15px 0;">
-
-    <!-- LEGAL DISCLAIMER -->
-    <div class="legal-disclaimer">
-      <strong>⚠️ Legal Disclaimer & Caution:</strong> Awaaz AI is an informational guide and civic rights navigator designed for educational and preliminary assistance purposes only. It <strong>does not constitute formal legal advice</strong> or establish an attorney-client relationship. For critical legal matters, please consult a qualified advocate or your local District Legal Services Authority (DLSA).
-    </div>
-
-    <!-- ORIGINAL AI CHATBOX & FASTAPI INPUT -->
-    <div class="chatbox-container">
-      <label for="problemInput">Ask the AI Legal Navigator:</label>
-      <div class="textarea-wrapper">
-        <textarea id="problemInput" maxlength="500" placeholder="E.g., I have an issue regarding potholes on the main road causing accidents..."></textarea>
+      <!-- STEP 2: Main AI Dashboard Interface -->
+      <div class="glass-panel" id="step2">
+        <h2>Legal Rights Navigator</h2>
+        <p class="subtitle">Providing civic assistance for residents of <strong id="userLocationDisplay" style="color:var(--primary-color);"></strong>.</p>
         
-        <button type="button" id="micBtn" class="mic-btn" title="Click to dictate">
-          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-            <line x1="12" y1="19" x2="12" y2="23"></line>
-            <line x1="8" y1="23" x2="16" y2="23"></line>
-          </svg>
-        </button>
-      </div>
-      <div class="chatbox-footer">
-        <span class="char-counter" id="charCount">0 / 500</span>
-        <button type="button" class="btn" id="submitIssueBtn">Submit Issue</button>
-      </div>
-    </div>
+        <!-- Quick Tool Feature Cards -->
+        <div class="features-grid" id="featuresGridContainer">
+          <div class="feature-card" onclick="openFeature('consumer')">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>Consumer Redressal</h3>
+            <p>Step-by-step resolution guides against faulty goods and services.</p>
+          </div>
+          <div class="feature-card" onclick="openFeature('helplines')">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <h3>Emergency Helplines</h3>
+            <p>Searchable directory of national & state emergency numbers.</p>
+          </div>
+          <div class="feature-card" onclick="openFeature('fir')">
+            <div class="feature-icon-wrapper">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>Police & State CCTNS</h3>
+            <p>Zero FIR guidelines, national cyber crime portals, and state police portals.</p>
+          </div>
+        </div>
 
-    <!-- Tabbed Dashboard Container -->
-    <div id="resultContainer" style="display: none;"></div>
+        <!-- Feature Detail View -->
+        <div class="feature-detail-view" id="featureDetailView">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="detailTitle" style="color: var(--primary-color); font-size: 1.2rem; display: flex; align-items: center; gap: 8px;"></h3>
+            <button type="button" class="btn-secondary" onclick="closeFeature()" style="margin: 0; font-weight: 600;">&larr; Close Guide</button>
+          </div>
+          <div id="detailContent" style="font-size: 0.9rem; color: var(--text-main); line-height: 1.5; margin-top: 10px;"></div>
+        </div>
 
-    <button type="button" class="btn-secondary" id="backBtn">Change Location</button>
-  </div>
+        <hr style="border: 0; border-top: 1px solid var(--border-glass); margin: 5px 0 15px 0;">
+
+        <!-- LEGAL DISCLAIMER -->
+        <div class="legal-disclaimer">
+          <strong>⚠️ Legal Disclaimer & Caution:</strong> Awaaz AI is an informational guide and civic rights navigator designed for educational and preliminary assistance purposes only. It <strong>does not constitute formal legal advice</strong> or establish an attorney-client relationship. For critical legal matters, please consult a qualified advocate or your local District Legal Services Authority (DLSA).
+        </div>
+
+        <!-- ORIGINAL AI CHATBOX & FASTAPI INPUT -->
+        <div class="chatbox-container">
+          <label for="problemInput">Ask the AI Legal Navigator:</label>
+          <div class="textarea-wrapper">
+            <textarea id="problemInput" maxlength="500" placeholder="E.g., I have an issue regarding potholes on the main road causing accidents..."></textarea>
+            
+            <button type="button" id="micBtn" class="mic-btn" title="Click to dictate">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="chatbox-footer">
+            <span class="char-counter" id="charCount">0 / 500</span>
+            <button type="button" class="btn" id="submitIssueBtn">Submit Issue</button>
+          </div>
+        </div>
+
+        <!-- Tabbed Dashboard Container -->
+        <div id="resultContainer" style="display: none;"></div>
+
+        <button type="button" class="btn-secondary" id="backBtn">Change Location</button>
+      </div>
+
+    </main>
+
+
+    <!-- 2. RIGHT SIDE: PERMANENT RIGHTS PANEL -->
+    <aside class="permanent-rights-panel">
+        <h3>Master Legal Rights Guide</h3>
+        <p class="panel-desc">Verified emergency responses (Click to expand):</p>
+        
+        <div class="categories-container">
+
+            <!-- Category 1 -->
+            <div class="rights-category">
+                <h4>Police Encounters & Stops</h4>
+                
+                <details class="qa-card">
+                    <summary>Street Stop, Frisk & ID Checks</summary>
+                    <div class="qa-answer">
+                        Police can stop you in public to ask your name and address only if they have reasonable suspicion.
+                        <ul>
+                            <li>You are not legally mandated to empty your pockets without formal grounds.</li>
+                            <li>Ask clearly: <em>"Am I being detained, or am I free to go?"</em></li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>What if police slap, beat, or torture you?</summary>
+                    <div class="qa-answer">
+                        Police have <strong>zero legal authority</strong> to inflict physical violence. 
+                        <ul>
+                            <li><strong>Article 21</strong> protects your bodily integrity.</li>
+                            <li>Demand an immediate medical examination and report the officer to a Judicial Magistrate.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>Police Demanding Phone / Checking WhatsApp</summary>
+                    <div class="qa-answer">
+                        Police <strong>cannot</strong> forcefully grab your phone or scroll through private chats without a formal court order or warrant.
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>Vehicle Checks & Traffic Stops</summary>
+                    <div class="qa-answer">
+                        Traffic police can check documents, but a regular officer <strong>cannot search your car or luggage</strong> without a proper warrant or explicit probable cause.
+                    </div>
+                </details>
+            </div>
+
+            <!-- Category 2 -->
+            <div class="rights-category">
+                <h4>Arrest & Custody Rights</h4>
+
+                <details class="qa-card">
+                    <summary>Unwarranted / Illegal Arrest</summary>
+                    <div class="qa-answer">
+                        An arrest without a warrant is illegal unless it involves a cognizable offense with direct evidence. Demand the exact <strong>grounds of arrest</strong> (Article 22).
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>The Mandatory 24-Hour Rule</summary>
+                    <div class="qa-answer">
+                        Under <strong>Article 22(2)</strong>, anyone arrested <strong>must</strong> be produced before a Judicial Magistrate within <strong>24 hours</strong> (excluding travel time).
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>Right to Inform Family & Legal Aid</summary>
+                    <div class="qa-answer">
+                        You have the absolute right to notify a family member about your arrest and consult a lawyer immediately.
+                    </div>
+                </details>
+            </div>
+
+            <!-- Category 3 -->
+            <div class="rights-category">
+                <h4>Station, Raids & Interrogation</h4>
+
+                <details class="qa-card">
+                    <summary>Police Raids & Searches at Home</summary>
+                    <div class="qa-answer">
+                        Police generally cannot enter or search your house without a <strong>search warrant</strong> issued by a magistrate. You have the right to have independent neighborhood witnesses present.
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>Refusing to Sign Blank Papers / Confessions</summary>
+                    <div class="qa-answer">
+                        <strong>Never sign blank papers or forced confessions.</strong> Under <strong>Article 20(3)</strong>, you are protected against self-incrimination, and station confessions are inadmissible.
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>Rights of Women During Arrest & Detention</summary>
+                    <div class="qa-answer">
+                        <ul>
+                            <li>Women <strong>cannot</strong> be arrested between sunset and sunrise without prior judicial magistrate permission.</li>
+                            <li>A female officer must be present during arrest and body searches.</li>
+                        </ul>
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>Police Refusing to File an FIR</summary>
+                    <div class="qa-answer">
+                        Filing an FIR is mandatory for cognizable offenses. If refused, mail your complaint to the Superintendent of Police (SP) or file a <strong>Zero FIR</strong> anywhere.
+                    </div>
+                </details>
+            </div>
+
+            <!-- Category 4 -->
+            <div class="rights-category">
+                <h4>Public Assemblies & Protests</h4>
+
+                <details class="qa-card">
+                    <summary>Protests, Gatherings & Section 144</summary>
+                    <div class="qa-answer">
+                        Citizens have a right to peaceful assembly under Article 19. If Section 144 is imposed, police must issue a formal warning and disperse crowds lawfully before using force.
+                    </div>
+                </details>
+            </div>
+
+            <!-- Category 5 -->
+            <div class="rights-category">
+                <h4>Fundamental Articles</h4>
+
+                <details class="qa-card">
+                    <summary>Article 21: Life & Personal Liberty</summary>
+                    <div class="qa-answer">
+                        Guarantees that no person can be deprived of life or personal liberty except according to established legal procedure.
+                    </div>
+                </details>
+
+                <details class="qa-card">
+                    <summary>Article 22: Safeguards Against Arbitrary Arrest</summary>
+                    <div class="qa-answer">
+                        Provides the right to know arrest reasons, access legal counsel, and face a magistrate within 24 hours.
+                    </div>
+                </details>
+            </div>
+
+        </div>
+    </aside>
+
+  </div> <!-- /app-layout -->
 
   <!-- Multilingual Assistant UI -->
   <div class="assistant-container">
