@@ -15,16 +15,21 @@ load_dotenv()
 # Initialize API
 app = FastAPI(title="Rights Navigator API", version="1.0.0")
 
-# Favicon
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon():
-    return FileResponse("frontend/static/awaaz.png")
-
 # Direction
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 FRONTEND_DIR = os.path.abspath(os.path.join(BASE_DIR, "../frontend"))
 
 app.mount("/static", StaticFiles(directory=os.path.join(FRONTEND_DIR, "static")), name="static")
+
+# Favicon
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    # Reuse the correct FRONTEND_DIR we defined above
+    file_path = os.path.join(FRONTEND_DIR, "static", "awaaz.png")
+    if os.path.exists(file_path):
+        return FileResponse(file_path)
+    raise HTTPException(status_code=404, detail="Favicon not found")
+
 
 @app.get("/")
 def read_index():
