@@ -78,7 +78,6 @@ const globalHelplines = [
   { name: "Disaster Management (NDMA)", number: "1078", category: "Disaster Relief" }
 ];
 
-// Pre-built RTI Scenario Templates
 const rtiTemplates = {
   roads: "I want to file a Section 6(1) RTI application requesting certified copies of the tender sanction order, contractor work completion certificate, total expenditure, and quality inspection test reports for the road repair work carried out in our municipal area/ward over the past 2 years.",
   license: "I applied for my Driving License / Passport / Ration Card under Application No: [Insert Number] on [Insert Date]. Despite the lapse of the citizen charter timeline, it has not been delivered. Under Section 6(1) RTI Act 2005, please provide the daily progress report and names of officials with whom my file was pending.",
@@ -88,7 +87,6 @@ const rtiTemplates = {
   hospital: "Please provide certified records of the sanctioned vs available inventory of essential medicines, list of on-duty specialist doctors, and funds allocated for medical equipment maintenance at the local Government Hospital / Primary Health Centre (PHC) for the current financial year."
 };
 
-// Supported Voice Locale Mapping
 const langVoiceMap = {
   "English": "en-IN",
   "Hindi": "hi-IN",
@@ -146,7 +144,8 @@ let isSpeaking = false;
 let currentSpeechText = "";
 let currentSessionData = null;
 let currentSelectedLanguage = "English";
-let currentFontSizeLevel = 0; // -1, 0, 1
+let currentFontSizeLevel = 0;
+let originalDraftSection6 = "";
 
 // --- XSS Sanitization Helper ---
 function escapeHtml(str) {
@@ -279,6 +278,24 @@ window.openFeature = function(type) {
         <a href="https://edaakhil.nic.in/" target="_blank" class="external-link-btn">🔗 e-Daakhil Court Filing</a>
         <a href="${portals.legalAid}" target="_blank" class="external-link-btn">🔗 ${escapeHtml(userState)} Legal Services</a>
         <button class="action-tool-btn" onclick="copySummary('Consumer Steps: Invoices -> 15-day notice -> NCH 1915 -> e-Daakhil filing.')">📋 Copy Guide</button>
+      </div>`;
+  } else if (type === 'postal') {
+    detailTitle.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.2 8.4c.5.38.8.97.8 1.6v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V10a2 2 0 0 1 .8-1.6l8-6a2 2 0 0 1 2.4 0l8 6z"/></svg> Postal Dispatch & Speed Post Guide (RPAD)`;
+    detailContent.innerHTML = `
+      <p>How to physically file your Section 6(1) RTI application at your local Head Post Office in <strong>${escapeHtml(userDistrict)}</strong>:</p>
+      <br>
+      <label class="checklist-item"><input type="checkbox"><span>Step 1: Purchase a ₹10 <strong>Indian Postal Order (IPO)</strong> or Court Fee Stamp at the post office counter. (Leave 'Pay To' as the Accounts Officer of the department).</span></label>
+      <label class="checklist-item"><input type="checkbox"><span>Step 2: Sign your printed A4 RTI application and staple the ₹10 IPO on top.</span></label>
+      <label class="checklist-item"><input type="checkbox"><span>Step 3: Put in a brown envelope and clearly write on top: <em>"APPLICATION UNDER RIGHT TO INFORMATION ACT, 2005"</em>.</span></label>
+      <label class="checklist-item"><input type="checkbox"><span>Step 4: Dispatch via <strong>Registered Speed Post with Acknowledgment Due (RPAD)</strong> and preserve the postal receipt for 30-day tracking.</span></label>
+      
+      <div class="dlsa-box">
+        <strong>📮 Track Delivery:</strong> Use the 13-digit tracking number on the official India Post portal to establish the legal Date of Receipt by the PIO.
+      </div>
+
+      <div style="margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px;">
+        <a href="https://www.indiapost.gov.in/_layouts/15/dptcp.gear.eservices/Tracking/articletracking.aspx" target="_blank" class="external-link-btn">🔗 Track Speed Post on India Post</a>
+        <button class="action-tool-btn" onclick="copySummary('Postal Checklist: Print draft -> Staple ₹10 IPO -> Envelope marked RTI Act -> Send Speed Post RPAD.')">📋 Copy Checklist</button>
       </div>`;
   } else if (type === 'helplines') {
     detailTitle.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Official National & Emergency Helplines`;
@@ -841,10 +858,149 @@ submitIssueBtn.addEventListener('click', async () => {
   }
 });
 
+// --- Dynamic Statutory Calendar Dates Helper ---
+function getStatutoryMilestones() {
+  const today = new Date();
+  
+  const day30 = new Date(today);
+  day30.setDate(today.getDate() + 30);
+  
+  const day60 = new Date(today);
+  day60.setDate(today.getDate() + 60);
+
+  const day150 = new Date(today);
+  day150.setDate(today.getDate() + 150);
+
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return {
+    filingDate: today.toLocaleDateString('en-IN', options),
+    day30Date: day30.toLocaleDateString('en-IN', options),
+    day60Date: day60.toLocaleDateString('en-IN', options),
+    day150Date: day150.toLocaleDateString('en-IN', options),
+    isoDay30: day30.toISOString().replace(/-|:|\.\d+/g, "").substring(0, 8),
+    isoDay60: day60.toISOString().replace(/-|:|\.\d+/g, "").substring(0, 8)
+  };
+}
+
+// --- Calendar Reminder URL Generators ---
+window.addToGoogleCalendar = function() {
+  const milestones = getStatutoryMilestones();
+  const title = encodeURIComponent("RTI 30-Day Mandatory PIO Deadline (Sec 7(1))");
+  const details = encodeURIComponent("30 days have elapsed since filing your Section 6(1) RTI Application. If no records or reply received, prepare to file Section 19(1) First Appeal to the First Appellate Authority (FAA).");
+  const location = encodeURIComponent(currentSessionData ? `${currentSessionData.payload.district}, ${currentSessionData.payload.state}` : "Public Authority");
+  const dateStr = `${milestones.isoDay30}/${milestones.isoDay30}`;
+
+  const gCalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}&dates=${dateStr}`;
+  window.open(gCalUrl, '_blank');
+};
+
+window.downloadIcsCalendar = function() {
+  const milestones = getStatutoryMilestones();
+  const icsData = 
+`BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Awaaz AI//RTI Statutory Tracker//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+SUMMARY:RTI 30-Day Mandatory PIO Deadline (Sec 7(1))
+DESCRIPTION:Statutory 30-day clock under Section 7(1) RTI Act 2005 expires today. If records not furnished\\, file Section 19(1) First Appeal.
+DTSTART;VALUE=DATE:${milestones.isoDay30}
+DTEND;VALUE=DATE:${milestones.isoDay30}
+STATUS:CONFIRMED
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:RTI Section 19(1) First Appeal Deadline
+DESCRIPTION:Last day to file First Appeal under Section 19(1) of the RTI Act 2005.
+DTSTART;VALUE=DATE:${milestones.isoDay60}
+DTEND;VALUE=DATE:${milestones.isoDay60}
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR`;
+
+  const blob = new Blob([icsData], { type: "text/calendar;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = window.URL.createObjectURL(blob);
+  link.setAttribute("download", "RTI_Statutory_Deadlines.ics");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast("Statutory .ics calendar downloaded!", "success");
+};
+
+// --- First Appeal Application Generator ---
+window.switchDraftType = function(type) {
+  const draftArea = document.getElementById('draftTextArea');
+  const btn6 = document.getElementById('switchBtnSec6');
+  const btn19 = document.getElementById('switchBtnSec19');
+
+  if (!draftArea) return;
+
+  if (type === 'sec19') {
+    btn6.classList.remove('active');
+    btn19.classList.add('active');
+
+    const authority = currentSessionData ? currentSessionData.data.section_2_implementation.target_authority_or_portal : "Public Authority";
+    const district = currentSessionData ? currentSessionData.payload.district : "[District]";
+    const state = currentSessionData ? currentSessionData.payload.state : "[State]";
+    const issue = currentSessionData ? currentSessionData.payload.issue_description : "[RTI Information Sought]";
+
+    draftArea.value = 
+`MEMORANDUM OF FIRST APPEAL UNDER SECTION 19(1) OF THE RTI ACT, 2005
+
+To,
+The First Appellate Authority (FAA),
+Office of: ${authority},
+District: ${district}, ${state}
+
+Subject: First Appeal under Section 19(1) of the Right to Information Act, 2005 against Deemed Refusal / Non-Furnishing of Information under Section 7(2).
+
+1. Particulars of the Appellant:
+   Name: [Your Full Name]
+   Address: [Your Full Residential Address, ${district}, ${state}]
+   Contact Number: [Your Mobile Number]
+   Email ID: [Your Email ID]
+
+2. Particulars of the Public Information Officer (PIO):
+   Designation: Central / State Public Information Officer (PIO)
+   Public Authority: ${authority}
+
+3. Date of submission of Section 6(1) Application: [Insert Original Filing Date]
+   Mode of Dispatch: Registered Speed Post / Online (Tracking / Ref No: [Insert Speed Post Ref])
+
+4. Brief Facts & Grounds for Appeal:
+   a. The Appellant filed an application under Section 6(1) of the RTI Act, 2005 seeking certified records regarding:
+      "${issue}"
+   b. More than 30 days have elapsed since the receipt of the RTI application by the PIO.
+   c. The PIO has failed to furnish the requested records within the mandatory period stipulated under Section 7(1).
+   d. Therefore, under Section 7(2) of the Act, the PIO is deemed to have refused the request.
+
+5. Reliefs Prayed For:
+   a. Direct the PIO to immediately furnish the certified copies of records sought free of cost as mandated under Section 7(6).
+   b. Recommend penal proceedings under Section 20(1) and disciplinary action under Section 20(2) against the PIO for willful default without reasonable cause.
+
+Verification:
+I, the Appellant, do hereby declare that the particulars stated above are true to the best of my knowledge and belief.
+
+Date: ${new Date().toLocaleDateString('en-IN')}
+Place: ${district}, ${state}
+
+Signature of the Appellant: _______________________`;
+
+    showToast("Switched to Section 19(1) First Appeal Memo", "info");
+
+  } else {
+    btn19.classList.remove('active');
+    btn6.classList.add('active');
+    draftArea.value = originalDraftSection6;
+    showToast("Switched to Section 6(1) RTI Application", "info");
+  }
+};
+
 function renderTabbedResults(data) {
   const advice = data.section_1_advice;
   const impl = data.section_2_implementation;
   const contact = impl.contact_info;
+  const milestones = getStatutoryMilestones();
 
   let stepsHtml = impl.step_by_step_execution
     .map(step => `<li><strong>Step ${step.step_number}:</strong> ${escapeHtml(step.instruction)}</li>`)
@@ -853,7 +1009,7 @@ function renderTabbedResults(data) {
     .map(right => `<li>${escapeHtml(right)}</li>`)
     .join('');
   
-  let formattedDraft = formatDraftText(impl.draft_text_to_submit);
+  originalDraftSection6 = formatDraftText(impl.draft_text_to_submit);
 
   let rightsText = advice.applicable_rights.join('. ');
   let stepsText = impl.step_by_step_execution.map(step => `Step ${step.step_number}: ${step.instruction}`).join('. ');
@@ -886,6 +1042,44 @@ function renderTabbedResults(data) {
 
       <!-- TAB 1: Overview -->
       <div class="tab-pane active" id="tab-overview">
+        
+        <!-- Statutory Milestones Calendar Card -->
+        <div class="statutory-calendar-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <h3 style="margin: 0; border: none; padding: 0; color: var(--primary-color); display: flex; align-items: center; gap: 8px;">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Statutory 30-Day RTI Calendar & Appeal Window
+            </h3>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="action-tool-btn" onclick="addToGoogleCalendar()">📅 Add to Google Calendar</button>
+              <button class="action-tool-btn" onclick="downloadIcsCalendar()">📥 Download .ics Reminder</button>
+            </div>
+          </div>
+
+          <div class="calendar-milestones-grid">
+            <div class="milestone-box">
+              <span class="milestone-tag">Filing Date (T+0)</span>
+              <span class="milestone-date">${milestones.filingDate}</span>
+              <span class="milestone-desc">Section 6(1) application dispatched via Speed Post / Online.</span>
+            </div>
+            <div class="milestone-box highlight">
+              <span class="milestone-tag">30-Day PIO Deadline (Sec 7(1))</span>
+              <span class="milestone-date">${milestones.day30Date}</span>
+              <span class="milestone-desc">Mandatory deadline for PIO to provide certified records.</span>
+            </div>
+            <div class="milestone-box">
+              <span class="milestone-tag">1st Appeal Window (Sec 19(1))</span>
+              <span class="milestone-date">Until ${milestones.day60Date}</span>
+              <span class="milestone-desc">30-day window to file First Appeal to FAA if ignored.</span>
+            </div>
+            <div class="milestone-box">
+              <span class="milestone-tag">2nd Appeal to Commission (Sec 19(3))</span>
+              <span class="milestone-date">Until ${milestones.day150Date}</span>
+              <span class="milestone-desc">90-day window to approach State / Central Info Commission.</span>
+            </div>
+          </div>
+        </div>
+
         <div class="bento-card">
           <h3>
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
@@ -907,6 +1101,21 @@ function renderTabbedResults(data) {
 
       <!-- TAB 2: Action Plan -->
       <div class="tab-pane" id="tab-action">
+        
+        <!-- Pre-Filing Compliance Self-Audit Widget -->
+        <div class="compliance-audit-card">
+          <h3 style="margin: 0; border: none; padding: 0; color: var(--primary-color); display: flex; align-items: center; gap: 8px; font-size: 0.95rem;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Pre-Filing Compliance Self-Audit (Section 8 Verification)
+          </h3>
+          <div class="audit-items-grid">
+            <label class="audit-check-item"><input type="checkbox" checked><span>✅ Request seeks existing certified records, files, or logs.</span></label>
+            <label class="audit-check-item"><input type="checkbox" checked><span>✅ Safe from Section 8(1)(j) third-party personal privacy breach.</span></label>
+            <label class="audit-check-item"><input type="checkbox" checked><span>✅ Application fee ₹10 IPO attached (or BPL card certified).</span></label>
+            <label class="audit-check-item"><input type="checkbox" checked><span>✅ Includes mandatory Section 6(3) 5-day transfer clause.</span></label>
+          </div>
+        </div>
+
         <div class="bento-card">
           <h3>
             <svg viewBox="0 0 24 24"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
@@ -939,15 +1148,22 @@ function renderTabbedResults(data) {
       <!-- TAB 3: Legal Draft -->
       <div class="tab-pane" id="tab-draft">
         <div class="formal-letterhead-container full-width" style="grid-column: span 2;">
+          
           <div class="letterhead-header">
-            <h4>FORMAL APPLICATION UNDER SECTION 6(1) OF THE RTI ACT, 2005</h4>
-            <p>Ready for Speed Post / Physical Filing / Online Portal Submission</p>
+            <h4>LEGAL APPLICATION & APPEAL MEMORANDUM ENGINE</h4>
+            <p>Section 6(1) Initial Application & Section 19(1) First Appeal</p>
           </div>
           
           <div class="draft-header-row">
-            <div>
-              <span class="draft-edit-badge">✏️ Edit applicant details, postal addresses, or specific queries directly below:</span>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <!-- Section 6 vs Section 19 Switcher -->
+              <div class="draft-type-switcher">
+                <button type="button" class="draft-switch-btn active" id="switchBtnSec6" onclick="switchDraftType('sec6')">Section 6(1) RTI</button>
+                <button type="button" class="draft-switch-btn" id="switchBtnSec19" onclick="switchDraftType('sec19')">Section 19(1) 1st Appeal</button>
+              </div>
+              <span class="draft-edit-badge">✏️ Live editable draft:</span>
             </div>
+            
             <div class="draft-actions-group">
               <button type="button" class="action-tool-btn" id="copyDraftBtn" onclick="copyDraftText()">
                 <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -967,7 +1183,7 @@ function renderTabbedResults(data) {
               </button>
             </div>
           </div>
-          <textarea id="draftTextArea" class="draft-textarea">${escapeHtml(formattedDraft)}</textarea>
+          <textarea id="draftTextArea" class="draft-textarea">${escapeHtml(originalDraftSection6)}</textarea>
         </div>
       </div>
 
@@ -1008,12 +1224,12 @@ window.downloadDraftPDF = function() {
   const doc = new jsPDF();
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("FORMAL APPLICATION UNDER SECTION 6(1) OF THE RTI ACT, 2005", 15, 20);
+  doc.setFontSize(13);
+  doc.text("FORMAL APPLICATION / MEMORANDUM UNDER RTI ACT, 2005", 15, 20);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 15, 28);
+  doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN')}`, 15, 28);
 
   doc.setDrawColor(180);
   doc.line(15, 32, 195, 32);
@@ -1023,7 +1239,7 @@ window.downloadDraftPDF = function() {
   const splitText = doc.splitTextToSize(draftArea.value, 180);
   doc.text(splitText, 15, 40);
 
-  doc.save("RTI_Section_6_1_Application.pdf");
+  doc.save("RTI_Statutory_Application.pdf");
   showToast("Formal RTI PDF downloaded!", "success");
 };
 
@@ -1040,7 +1256,7 @@ window.shareOnWhatsApp = function() {
     showToast("No draft text to share.", "error");
     return;
   }
-  const text = `*RTI Application Draft via Awaaz AI:*\n\n${draftArea.value}`;
+  const text = `*RTI Statutory Application via Awaaz AI:*\n\n${draftArea.value}`;
   const encoded = encodeURIComponent(text);
   window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
 };

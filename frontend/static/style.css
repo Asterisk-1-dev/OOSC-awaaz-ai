@@ -1,16 +1,14 @@
 /* ==========================================================================
-   AWAAZ AI - PROFESSIONAL RTI & CIVIC RIGHTS PORTAL DESIGN SYSTEM
+   AWAAZ AI - INSTITUTIONAL RTI & CIVIC RIGHTS PORTAL DESIGN SYSTEM
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* --- Design Tokens & Color Palettes --- */
 :root {
   --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --base-font-size: 16px;
   
-  /* Civic Tricolor Accents */
   --saffron: #ff9933;
   --white: #ffffff;
   --india-green: #138808;
@@ -21,7 +19,7 @@
   --bg-deep: #090e1a;
   --bg-surface: #0f172a;
   --sidebar-bg: #131d33;
-  --panel-bg: rgba(19, 29, 51, 0.88);
+  --panel-bg: rgba(19, 29, 51, 0.90);
   --card-bg: rgba(30, 41, 67, 0.65);
   --card-hover: rgba(43, 58, 92, 0.75);
   --primary-color: #38bdf8;
@@ -38,13 +36,14 @@
   --error-color: #ef4444;
   --header-bg: rgba(15, 23, 42, 0.95);
   --badge-bg: rgba(56, 189, 248, 0.12);
+  --footer-bg: #0b1120;
 }
 
 :root[data-theme="light"] {
   --bg-deep: #f4f6f9;
   --bg-surface: #ffffff;
   --sidebar-bg: #f8fafc;
-  --panel-bg: rgba(255, 255, 255, 0.96);
+  --panel-bg: rgba(255, 255, 255, 0.97);
   --card-bg: #ffffff;
   --card-hover: #f1f5f9;
   --primary-color: #0284c7;
@@ -61,6 +60,7 @@
   --error-color: #dc2626;
   --header-bg: rgba(255, 255, 255, 0.98);
   --badge-bg: rgba(2, 132, 199, 0.08);
+  --footer-bg: #e2e8f0;
 }
 
 /* --- Base Resets --- */
@@ -113,13 +113,13 @@ body {
 .civic-header-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .portal-emblem-badge {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 0.85rem;
   font-weight: 700;
   color: var(--text-main);
@@ -143,7 +143,7 @@ body {
 .civic-helplines-strip {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   font-size: 0.78rem;
   color: var(--text-muted);
 }
@@ -159,7 +159,7 @@ body {
 .civic-header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* --- Accessibility Font Size Controls --- */
@@ -174,7 +174,7 @@ body {
   background: transparent;
   border: none;
   color: var(--text-main);
-  padding: 4px 10px;
+  padding: 4px 9px;
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
@@ -187,7 +187,7 @@ body {
   background: var(--card-bg);
   border: 1px solid var(--border-subtle);
   color: var(--text-main);
-  padding: 6px 12px;
+  padding: 6px 10px;
   border-radius: 8px;
   font-size: 0.82rem;
   font-weight: 600;
@@ -199,7 +199,7 @@ body {
   border-color: var(--primary-color);
 }
 
-.theme-toggle-civic {
+.theme-toggle-civic, .history-toggle-civic {
   background: var(--card-bg);
   border: 1px solid var(--border-subtle);
   color: var(--text-main);
@@ -213,27 +213,7 @@ body {
   gap: 6px;
   transition: all 0.2s;
 }
-.theme-toggle-civic:hover {
-  background: var(--hover-bg);
-  border-color: var(--primary-color);
-}
-
-/* --- History Toggle in Topbar --- */
-.history-toggle-civic {
-  background: var(--card-bg);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-main);
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-}
-.history-toggle-civic:hover {
+.theme-toggle-civic:hover, .history-toggle-civic:hover {
   background: var(--hover-bg);
   border-color: var(--primary-color);
 }
@@ -271,7 +251,7 @@ body {
 .clear-all-sidebar { background: transparent; border: none; color: var(--text-muted); font-size: 0.75rem; cursor: pointer; text-decoration: underline; }
 .clear-all-sidebar:hover { color: var(--error-color); }
 
-/* --- App Layout & Grid Alignment --- */
+/* --- App Layout --- */
 .app-layout { 
   display: grid;
   grid-template-columns: 1fr minmax(auto, 940px) 1fr;
@@ -292,7 +272,7 @@ body {
   align-items: center; 
 }
 
-/* --- Hero Banner & Official Seal --- */
+/* --- Hero Banner --- */
 .portal-hero-banner {
   text-align: center;
   margin-bottom: 20px;
@@ -308,8 +288,8 @@ body {
   justify-content: center;
 }
 .portal-logo-img {
-  width: 58px;
-  height: 58px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   filter: drop-shadow(0 2px 8px var(--primary-glow));
 }
@@ -391,7 +371,7 @@ body {
   font-weight: 700;
 }
 
-/* --- Glass Panels (Modern Civic Elevation) --- */
+/* --- Glass Panels --- */
 .glass-panel {
   background: var(--panel-bg);
   backdrop-filter: blur(16px);
@@ -668,6 +648,111 @@ body {
 .portal-link-btn:hover { filter: brightness(1.1); }
 .portal-link-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; }
 
+/* --- Statutory RTI Timeline Calendar Card --- */
+.statutory-calendar-card {
+  grid-column: span 2;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.calendar-milestones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+}
+.milestone-box {
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.milestone-box.highlight {
+  border-color: var(--primary-color);
+  background: var(--active-bg);
+}
+.milestone-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
+}
+.milestone-date {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-main);
+}
+.milestone-desc {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+/* --- First Appeal & Mode Switcher Segmented Control --- */
+.draft-type-switcher {
+  display: flex;
+  background: var(--bg-deep);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 3px;
+  width: fit-content;
+}
+.draft-switch-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.draft-switch-btn.active {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+/* --- Pre-Filing Compliance Self-Audit Widget --- */
+.compliance-audit-card {
+  grid-column: span 2;
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.audit-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+}
+.audit-check-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-main);
+  background: var(--bg-deep);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+.audit-check-item input[type="checkbox"] {
+  accent-color: var(--primary-color);
+  width: 16px;
+  height: 16px;
+}
+
 /* --- Formal RTI Letterhead Application Styling --- */
 .formal-letterhead-container {
   border: 2px solid var(--border-subtle);
@@ -900,6 +985,78 @@ body {
 .lang-chip, .action-chip { background: var(--card-bg); border: 1px solid var(--border-strong); color: var(--primary-color); padding: 4px 8px; border-radius: 12px; font-size: 0.76rem; cursor: pointer; transition: all 0.15s; }
 .lang-chip:hover, .action-chip:hover { background: var(--primary-color); color: #fff; }
 
+/* --- Institutional Civic Footer --- */
+.civic-footer {
+  width: 100%;
+  background: var(--footer-bg);
+  border-top: 1px solid var(--border-subtle);
+  padding: 40px 24px 25px 24px;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  font-size: 0.85rem;
+}
+.footer-container {
+  max-width: 1100px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+}
+.footer-col h5 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.footer-col p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.footer-links-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.footer-links-list a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+.footer-links-list a:hover {
+  text-decoration: underline;
+}
+.footer-privacy-seal {
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--success-color);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-bottom-row {
+  border-top: 1px solid var(--border-subtle);
+  width: 100%;
+  max-width: 1100px;
+  padding-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
 /* --- Responsive Media Queries --- */
 @media (max-width: 1400px) {
   .app-layout { flex-direction: column; align-items: center; display: flex; }
@@ -921,6 +1078,7 @@ body {
   .btn-civic-primary { width: 100%; }
   .tab-pane.active { grid-template-columns: 1fr; }
   .bento-card.full-width { grid-column: span 1; }
+  .statutory-calendar-card, .compliance-audit-card { grid-column: span 1; }
   .portal-main-title { font-size: 1.5rem; }
   .template-chips-grid { gap: 6px; }
   .template-chip { font-size: 0.74rem; padding: 4px 8px; }
@@ -953,7 +1111,11 @@ body {
   .btn-secondary,
   .toast-container,
   .draft-actions-group,
-  .draft-edit-badge {
+  .draft-edit-badge,
+  .draft-type-switcher,
+  .statutory-calendar-card,
+  .compliance-audit-card,
+  .civic-footer {
     display: none !important;
   }
   .app-layout { display: block !important; padding: 0 !important; }
